@@ -1,0 +1,23 @@
+{
+  "greeting": "Hi, I'm — ",
+  "name": "Snak",
+  "position": "Full-Stack Developer",
+  "wakatime": "Spent 200+ hours in IDE",
+  "recent_projects": "Recent Projects",
+  "projects": {
+    "project1": {
+      "title": "Foxogram",
+      "description": "An open-source realtime messaging app for all your floof friends"
+    },
+    "project2": {
+      "title": "MatrixBot",
+      "description": "Multifunctional Discord bot with commands for entertainment and various functions"
+    }
+  },
+  "alt": {
+    "avatar": "Avatar"
+  },
+  "aria": {
+    "project_link": "Project link"
+  }
+}

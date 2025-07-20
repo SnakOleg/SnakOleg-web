@@ -1,0 +1,23 @@
+{
+  "greeting": "Привет, я — ",
+  "name": "Снак",
+  "position": "Full-Stack разработчик",
+  "wakatime": "Просидел более 200 часов в IDE",
+  "recent_projects": "Последние проекты",
+  "projects": {
+    "project1": {
+      "title": "Foxogram",
+      "description": "Мессенджер для обмена сообщений в реальном времени"
+    },
+    "project2": {
+      "title": "MatrixBot",
+      "description": "Многофункциональный Discord бот с командами для развлечений и разным функционалом"
+    }
+  },
+  "alt": {
+    "avatar": "Аватар"
+  },
+  "aria": {
+    "project_link": "Ссылка на проект"
+  }
+}
