@@ -46,3 +46,14 @@
         -webkit-backdrop-filter: blur(4px);
     }
 }
+
+@media (max-width: 600px) {
+    .tech-tooltip {
+        font-size: 0.7rem;
+        padding: 3px 7px;
+    }
+    .tech-icon {
+        width: 16px;
+        height: 16px;
+    }
+}

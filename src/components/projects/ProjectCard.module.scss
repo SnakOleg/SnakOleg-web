@@ -1,8 +1,8 @@
 .project-content {
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .project-card {
@@ -17,6 +17,7 @@
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
     position: relative;
+    flex-grow: 1;
 }
 
 .project-image {
@@ -136,5 +137,31 @@
 
     .tech-stack {
         grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .project-card {
+        border-radius: 10px;
+    }
+    .project-image {
+        height: 110px;
+        border-radius: 10px 10px 30px 30px;
+    }
+    .project-title {
+        font-size: 1rem;
+    }
+    .project-description {
+        font-size: 0.9rem;
+        min-height: 40px;
+    }
+    .tech-stack {
+        gap: 0.8rem;
+        min-height: 30px;
+        padding-top: 0.5rem;
+    }
+    .tech-icon {
+        width: 18px;
+        height: 18px;
     }
 }

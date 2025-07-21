@@ -1,10 +1,10 @@
-.main-container {
+.mainContainer {
     position: relative;
     padding: 4rem 2rem;
     transition: all 0.4s ease;
 }
 
-.profile-section {
+.profileSection {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 3rem;
@@ -13,12 +13,12 @@
     margin: 0 auto 4rem;
 }
 
-.avatar-wrapper {
+.avatarWrapper {
     position: relative;
     width: 240px;
 }
 
-.avatar-container {
+.avatarContainer {
     width: 100%;
     padding-top: 100%;
     position: relative;
@@ -28,7 +28,7 @@
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.avatar-container:hover {
+.avatarContainer:hover {
     transform: scale(1.03);
 }
 
@@ -41,7 +41,7 @@
     object-fit: cover;
 }
 
-.avatar-glow {
+.avatarGlow {
     position: absolute;
     inset: 0;
     border-radius: 50%;
@@ -83,7 +83,7 @@
     text-shadow: 0 0 5px rgba(164, 138, 255, 0.5);
 }
 
-.waka-link {
+.wakaLink {
     display: inline-flex;
     align-items: center;
     gap: 0.8rem;
@@ -95,50 +95,68 @@
     transition: all 0.3s ease;
 }
 
-.waka-link:hover {
+.wakaLink:hover {
     background: rgba(164, 138, 255, 0.2);
     transform: translateY(-2px);
 }
 
-.waka-icon {
+.wakaIcon {
     font-size: 1.2rem;
 }
 
-.projects-section {
+.projectsSection {
     max-width: 1200px;
     margin: 0 auto;
 }
 
-.projects-title {
+.projectsTitle {
     font-size: 2rem;
     margin-bottom: 2rem;
     color: var(--fg);
     text-align: center;
 }
 
-.projects-grid {
+.projectsGrid {
     display: grid;
     grid-template-columns: repeat(3, minmax(300px, 1fr));
     gap: 2rem;
     justify-content: center;
     max-width: 1200px;
     margin: 0 auto;
+    grid-auto-rows: 1fr;
+}
+
+.profileContent {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.buttonsContainer {
+    display: flex;
+    flex-wrap: nowrap;
 }
 
 @media (max-width: 768px) {
-    .profile-section {
+    .profileSection {
         grid-template-columns: 1fr;
         justify-items: center;
         gap: 2rem;
     }
 
-    .avatar-wrapper {
+    .avatarWrapper {
         width: 180px;
     }
 
-    .profile-content {
+    .profileContent {
         align-items: center;
         text-align: center;
+    }
+
+    .buttonsContainer {
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
     .title {
@@ -151,23 +169,72 @@
         margin: 0.5rem auto;
     }
 
-    .projects-title {
+    .wakaLink {
+        padding: 0.7rem 1.3rem;
+        font-size: 0.95rem;
+        gap: 0.7rem;
+    }
+
+    .wakaIcon {
+        font-size: 1.1rem;
+    }
+
+    .projectsTitle {
         font-size: 1.75rem;
     }
 
-    .projects-grid {
+    .projectsGrid {
         grid-template-columns: repeat(2, minmax(280px, 1fr));
         max-width: 100%;
     }
 
 }
 
+@media (max-width: 600px) {
+    .mainContainer {
+        padding: 1rem 0.5rem;
+    }
+    .profileSection {
+        gap: 1.2rem;
+        margin-bottom: 2rem;
+    }
+    .avatarWrapper {
+        width: 110px;
+    }
+    .title {
+        font-size: 1.3rem;
+    }
+    .typewriter {
+        font-size: 1rem;
+    }
+    .buttonsContainer {
+        flex-direction: column;
+        align-items: center;
+    }
+    .wakaLink {
+        padding: 0.6rem 1.1rem;
+        font-size: 0.85rem;
+        gap: 0.6rem;
+        margin: 0 0.3rem;
+    }
+    .wakaIcon {
+        font-size: 1rem;
+    }
+    .projectsTitle {
+        font-size: 1.1rem;
+    }
+    .projectsGrid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
 @media (prefers-color-scheme: dark) {
-    .project-card {
+    .projectCard {
         background: rgba(16, 16, 24, 0.5);
     }
 
-    .waka-link {
+    .wakaLink {
         background: rgba(255, 255, 255, 0.05);
     }
 }

@@ -16,11 +16,17 @@ interface TypewriterProps {
 
 export const Typewriter = ({ text, options = {} }: TypewriterProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
+    const instanceRef = useRef<TypeIt | null>(null);
 
     useEffect(() => {
         if (!containerRef.current) return;
 
-        const instance = new TypeIt(containerRef.current, {
+
+        if (instanceRef.current) {
+            instanceRef.current.destroy();
+        }
+
+        instanceRef.current = new TypeIt(containerRef.current, {
             strings: [text],
             speed: options.speed ?? 400,
             deleteSpeed: options.deleteSpeed ?? 100,
@@ -33,7 +39,9 @@ export const Typewriter = ({ text, options = {} }: TypewriterProps) => {
         }).go();
 
         return () => {
-            instance.destroy();
+            if (instanceRef.current) {
+                instanceRef.current.destroy();
+            }
         };
     }, [text, options]);
 

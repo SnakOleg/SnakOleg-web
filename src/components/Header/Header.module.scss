@@ -79,3 +79,17 @@ html.dark .lang:hover {
         border: 1px solid rgba(255, 255, 255, 0.1);
     }
 }
+
+@media (max-width: 600px) {
+    .title {
+        font-size: 1.1rem;
+        text-align: center;
+    }
+    .controls {
+        gap: 0.5rem;
+    }
+    .flag {
+        width: 20px;
+        height: 20px;
+    }
+}
