@@ -5,11 +5,12 @@ import { useLang } from "@/hooks/useLang";
 import { useLanguage } from "@/context/LanguageContext";
 import { FlyingDotsBackground } from "@/components/FloatingParticles";
 import { Icon } from "@/components/Icons/IconProvider";
-import Foxogram from "@assets/projects/Foxogram.png";
+import FoxoChat from "@assets/projects/FoxoChat.png";
 import MatrixBot from "@assets/projects/MatrixBot.png";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { Typewriter } from "@/components/TypingText";
 import { TechName } from "@/types/types";
+import { FaTelegramPlane } from "react-icons/fa";
 
 export const Home = () => {
     const { lang } = useLanguage();
@@ -39,8 +40,8 @@ export const Home = () => {
             title: translations.projects.project1.title,
             description: translations.projects.project1.description,
             tech: ["react", "preact", "typescript", "mobx"] as TechName[],
-            link: "https://foxogram.su/",
-            image: Foxogram,
+            link: "https://foxochat.app/",
+            image: FoxoChat,
         },
         {
             title: translations.projects.project2.title,
@@ -54,22 +55,22 @@ export const Home = () => {
     if (!mounted) return null;
 
     return (
-        <div className={styles["main-container"]}>
+        <div className={styles.mainContainer}>
             <FlyingDotsBackground />
 
-            <div className={styles["profile-section"]}>
-                <div className={styles["avatar-wrapper"]}>
-                    <div className={styles["avatar-container"]}>
+            <div className={styles.profileSection}>
+                <div className={styles.avatarWrapper}>
+                    <div className={styles.avatarContainer}>
                         <img
                             className={styles.avatar}
                             src={avatar}
                             alt={translations.alt.avatar}
                         />
-                        <div className={styles["avatar-glow"]} />
+                        <div className={styles.avatarGlow} />
                     </div>
                 </div>
 
-                <div className={styles["profile-content"]}>
+                <div className={styles.profileContent}>
                     <h1 className={styles.title}>
                         {translations.greeting}
                         <span className={styles.accent}>{translations.name}</span>
@@ -86,24 +87,37 @@ export const Home = () => {
                         </span>
                     </h1>
 
-                    <a
-                        href="https://wakatime.com/@snakoleg"
-                        className={styles["waka-link"]}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <Icon name="Clock" className={styles["waka-icon"]} />
-                        <span>{translations.wakatime}</span>
-                    </a>
+                    <div className={styles.buttonsContainer}>
+                        <a
+                            href="https://wakatime.com/@snakoleg"
+                            className={styles.wakaLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <Icon name="Clock" className={styles.wakaIcon} />
+                            <span>{translations.wakatime}</span>
+                        </a>
+
+                        <a
+                            href="https://t.me/the_nikeri"
+                            className={styles.wakaLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ marginLeft: "1rem" }}
+                        >
+                            <FaTelegramPlane size={20} />
+                            <span>@The_Nikeri</span>
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <div className={styles["projects-section"]}>
-                <h2 className={styles["projects-title"]}>
+            <div className={styles.projectsSection}>
+                <h2 className={styles.projectsTitle}>
                     {translations.recent_projects}
                 </h2>
 
-                <div className={styles["projects-grid"]}>
+                <div className={styles.projectsGrid}>
                     {projects.map((project, index) => (
                         <ProjectCard
                             key={`project-${index}`}
