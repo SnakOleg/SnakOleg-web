@@ -6,8 +6,8 @@
   "recent_projects": "Recent Projects",
   "projects": {
     "project1": {
-      "title": "Foxogram",
-      "description": "An open-source realtime messaging app for all your floof friends"
+      "title": "FoxoChat",
+      "description": "An open-source realtime messaging app"
     },
     "project2": {
       "title": "MatrixBot",

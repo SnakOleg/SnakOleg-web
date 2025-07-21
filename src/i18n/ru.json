@@ -6,7 +6,7 @@
   "recent_projects": "Последние проекты",
   "projects": {
     "project1": {
-      "title": "Foxogram",
+      "title": "FoxoChat",
       "description": "Мессенджер для обмена сообщений в реальном времени"
     },
     "project2": {
