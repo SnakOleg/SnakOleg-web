@@ -1,0 +1,109 @@
+:root {
+  --r-lg: 0.85rem;
+  --r-md: 0.6rem;
+  --hair: color-mix(in srgb, var(--line) 75%, transparent);
+  --shine: inset 0 1px 0 color-mix(in srgb, var(--ink) 7%, transparent);
+}
+
+.about,
+.activity,
+.skills > div,
+.statrow li,
+.pd {
+  border-radius: var(--r-lg);
+  border-color: var(--hair);
+  box-shadow: var(--shine);
+}
+.pd {
+  border-radius: 1rem;
+}
+.contacts a,
+.contacts .pair {
+  border-radius: var(--r-md);
+  border-color: var(--hair);
+}
+.contacts .pair a {
+  border-radius: 0;
+}
+.tl .row,
+.cust {
+  border-radius: var(--r-md);
+}
+
+h2.ph {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.statrow b {
+  font-weight: 600;
+}
+.pd h2 {
+  font-weight: 600;
+}
+.nav b {
+  font-weight: 700;
+}
+
+.av {
+  animation: none;
+  box-shadow:
+    0 0 0 1px var(--hair),
+    0 0 0 6px color-mix(in srgb, var(--acc) 12%, transparent);
+}
+
+::selection {
+  background: color-mix(in srgb, var(--acc) 35%, transparent);
+}
+html {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--mut) 45%, transparent) transparent;
+}
+
+html:not(.retro) body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@supports (animation-timeline: scroll()) {
+  html:not(.retro) body::before {
+    content: "";
+    position: fixed;
+    inset: 0 0 auto;
+    height: 2px;
+    z-index: 95;
+    transform-origin: 0 50%;
+    background: linear-gradient(90deg, var(--acc), var(--acc2));
+    animation: progress linear both;
+    animation-timeline: scroll(root);
+  }
+  @keyframes progress {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+}
+
+.pd-text a,
+.md a {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--acc) 50%, transparent);
+  text-underline-offset: 0.2em;
+  &:hover {
+    text-decoration-color: var(--acc);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    display: none;
+  }
+}

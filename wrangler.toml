@@ -1,0 +1,13 @@
+name = "snak-site"
+compatibility_date = "2026-09-01"
+pages_build_output_dir = "dist"
+
+[vars]
+# Time zone used to group statistics into days and hours (IANA name)
+STATS_TZ = "UTC"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "snak-db"
+database_id = "69f5b912-fe71-4ccc-b3ae-08db4ad92e72"
+migrations_dir = "migrations"

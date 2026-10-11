@@ -1,0 +1,300 @@
+.cmd {
+  text-align: center;
+  font:
+    500 0.9rem ui-monospace,
+    monospace;
+  color: var(--mut);
+  margin: -1rem 0 0.6rem;
+
+  span {
+    color: var(--acc);
+  }
+}
+
+.live {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--mut);
+  font-size: 0.8rem;
+  margin: 0 0 0.6rem;
+
+  i {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--line);
+
+    &.on {
+      background: #4ade80;
+      animation: pulse 2s infinite;
+    }
+  }
+}
+
+.tl {
+  --gut: 3.2rem;
+  position: relative;
+  max-width: 50rem;
+  margin: 0 auto 5rem;
+  padding-left: var(--gut);
+
+  ol {
+    list-style: none;
+    margin: 0 0 0 calc(74px + 14px);
+    padding: 0;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    padding: 7px 0;
+    opacity: 0;
+    transform: translateX(14px);
+    transition:
+      opacity 0.6s,
+      transform 0.6s;
+
+    &.in {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font: 600 1.05rem var(--f-head);
+    margin: 0;
+
+    a:hover {
+      color: var(--acc);
+    }
+
+    .i {
+      color: var(--mut);
+      width: 0.9em;
+    }
+  }
+
+  p {
+    margin: 0;
+    color: var(--mut);
+    font-size: 0.92rem;
+    line-height: 1.4;
+  }
+
+  .tech {
+    padding-top: 0.35rem;
+    margin: 0;
+
+    .cc {
+      color: var(--acc2);
+    }
+  }
+}
+
+.tcard {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 0.7rem 1.1rem;
+  background: var(--surf);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  transition:
+    border-color 0.25s,
+    transform 0.25s,
+    box-shadow 0.25s;
+
+  li.hot & {
+    border-color: var(--acc);
+    transform: translateX(4px);
+    box-shadow: 0 10px 30px -14px color-mix(in srgb, var(--acc) 55%, transparent);
+  }
+}
+
+.yr {
+  position: absolute;
+  left: 0;
+  font:
+    600 0.78rem ui-monospace,
+    monospace;
+  letter-spacing: 0.08em;
+  color: var(--mut);
+}
+
+.tm {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  font-size: 0.78rem;
+  color: var(--mut);
+
+  code {
+    font-family: ui-monospace, monospace;
+    color: var(--acc2);
+  }
+}
+
+.ref {
+  font:
+    600 0.7rem ui-monospace,
+    monospace;
+  font-style: normal;
+  border: 1px solid;
+  border-radius: 0.4rem;
+  padding: 0 0.45rem;
+
+  &.l0 {
+    color: var(--acc);
+  }
+
+  &.l1 {
+    color: var(--acc2);
+  }
+}
+
+.tg {
+  position: absolute;
+  left: var(--gut);
+  top: 0;
+  overflow: visible;
+
+  .l0 {
+    color: var(--acc);
+  }
+
+  .l1 {
+    color: var(--acc2);
+  }
+
+  path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: -1;
+    transition:
+      stroke-dashoffset 1s ease-out,
+      stroke-width 0.2s,
+      opacity 0.3s;
+
+    &.on {
+      stroke-dashoffset: 0;
+    }
+
+    &.hot {
+      stroke-width: 4.5;
+      filter: drop-shadow(0 0 6px currentColor);
+    }
+  }
+
+  .stub {
+    stroke: var(--line);
+    stroke-width: 1.5;
+    stroke-dasharray: 3 4;
+    transition:
+      stroke 0.2s,
+      opacity 0.3s;
+
+    &.hot {
+      stroke: currentColor;
+    }
+  }
+
+  .pulse {
+    fill: currentColor;
+    filter: drop-shadow(0 0 5px currentColor);
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .node {
+    transition: opacity 0.3s;
+  }
+
+  .dot {
+    fill: var(--bg);
+    stroke: currentColor;
+    stroke-width: 3;
+    transform: scale(0);
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      transform 0.5s cubic-bezier(0.3, 1.8, 0.5, 1),
+      fill 0.2s;
+  }
+
+  .ring {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .node.on .dot {
+    transform: scale(1);
+  }
+
+  .node.hot {
+    .dot {
+      transform: scale(1.35);
+      fill: currentColor;
+    }
+
+    .ring {
+      animation: ping 1.2s ease-out infinite;
+    }
+  }
+
+  .node.head .dot {
+    filter: drop-shadow(0 0 7px currentColor);
+  }
+
+  &.focus {
+    path:not(.hot),
+    .stub:not(.hot),
+    .pulse:not(.hot),
+    .node:not(.hot) {
+      opacity: 0.25;
+    }
+  }
+}
+
+@keyframes ping {
+  from {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 48rem) {
+  .tl {
+    --gut: 0px;
+  }
+
+  .yr {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse {
+    display: none;
+  }
+}

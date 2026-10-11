@@ -1,0 +1,66 @@
+.contacts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.7rem;
+  margin: 0 0 4rem;
+  padding: 0;
+  list-style: none;
+  a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--surf);
+    border: 1px solid var(--line);
+    border-radius: 3rem;
+    padding: 0.55rem 1.1rem;
+    transition:
+      border-color 0.2s,
+      transform 0.2s;
+    &:hover {
+      border-color: var(--acc);
+      transform: translateY(-2px);
+    }
+  }
+}
+
+.contacts .pair {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--line);
+  border-radius: 3rem;
+  background: var(--surf);
+  transition:
+    border-color 0.2s,
+    transform 0.2s;
+
+  &:hover {
+    border-color: var(--acc);
+    transform: translateY(-2px);
+  }
+
+  a {
+    padding-right: 0.7rem;
+    border: 0;
+    background: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+
+  .cp {
+    display: grid;
+    place-items: center;
+    padding: 0 0.95rem 0 0.3rem;
+    border: 0;
+    background: none;
+    color: var(--mut);
+    cursor: pointer;
+    transition: color 0.2s;
+
+    &:hover {
+      color: var(--acc);
+    }
+  }
+}

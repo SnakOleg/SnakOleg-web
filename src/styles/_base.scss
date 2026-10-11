@@ -1,0 +1,100 @@
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 5rem);
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--bg) radial-gradient(var(--dot) 1px, transparent 1.5px) 0 0 / 46px 46px;
+  color: var(--ink);
+  font: 400 1rem/1.6 var(--f-body);
+  transition:
+    background-color 0.4s,
+    color 0.4s;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--acc);
+  outline-offset: 3px;
+}
+main {
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 2rem;
+  position: relative;
+}
+.i {
+  display: inline-flex;
+  width: 1.15em;
+  height: 1.15em;
+  flex: none;
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+.glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    28rem circle at var(--mx) var(--my),
+    color-mix(in srgb, var(--acc) 14%, transparent),
+    transparent 70%
+  );
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+  .rv {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.nav,
+.foot,
+.contacts a,
+.fg,
+.ytabs,
+.statrow,
+.tech i,
+.st,
+.ref,
+.tm,
+.yr,
+.mlabel,
+.mhead,
+.loader,
+.cust,
+button {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--acc) 35%, transparent);
+}
+
+html {
+  scrollbar-color: var(--line) transparent;
+  scrollbar-width: thin;
+}

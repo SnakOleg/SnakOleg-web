@@ -1,0 +1,85 @@
+.prog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 40;
+  transform-origin: 0 50%;
+  transform: scaleX(var(--sp, 0));
+  background: linear-gradient(90deg, var(--acc), var(--acc2));
+}
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.7;
+  animation: aur 26s ease-in-out infinite alternate;
+  background:
+    radial-gradient(40% 40% at 18% 22%, color-mix(in srgb, var(--acc) 22%, transparent), transparent),
+    radial-gradient(35% 35% at 82% 68%, color-mix(in srgb, var(--acc2) 16%, transparent), transparent);
+  will-change: transform;
+}
+
+@keyframes aur {
+  to {
+    transform: translate(3%, 2%) scale(1.06);
+  }
+}
+.stars {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  i {
+    position: absolute;
+    width: var(--s);
+    height: var(--s);
+    border-radius: 50%;
+    background: var(--ink);
+    opacity: 0;
+    animation: tw 5s ease-in-out infinite;
+    animation-delay: var(--d);
+  }
+}
+@keyframes tw {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.totop {
+  position: fixed;
+  left: 1rem;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+  z-index: 15;
+  display: grid;
+  place-items: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--surf) 88%, transparent);
+  backdrop-filter: blur(10px);
+  color: var(--ink);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition:
+    opacity 0.3s,
+    transform 0.3s,
+    border-color 0.2s;
+
+  &.shown {
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+  }
+
+  &:hover {
+    border-color: var(--acc);
+    color: var(--acc);
+  }
+}

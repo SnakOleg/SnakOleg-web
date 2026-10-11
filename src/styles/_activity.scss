@@ -1,0 +1,89 @@
+.activity {
+  --cs: 13px;
+  max-width: 62rem;
+  margin: 0 auto 5rem;
+  padding: 1.2rem 1.4rem;
+  background: var(--surf);
+  border: 1px solid var(--line);
+  border-radius: 1.2rem;
+
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.4rem 1rem;
+    margin-bottom: 1rem;
+
+    h2 {
+      font: 600 1rem var(--f-head);
+      margin: 0;
+    }
+
+    span {
+      color: var(--mut);
+      font-size: 0.82rem;
+    }
+  }
+
+  footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    margin-top: 0.8rem;
+    color: var(--mut);
+    font-size: 0.8rem;
+
+    b {
+      color: var(--ink);
+    }
+  }
+
+  .legend {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+
+    i {
+      margin: 0 1px;
+    }
+  }
+}
+
+.ytabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 1rem;
+
+  button {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 2rem;
+    border: 1px solid var(--line);
+    background: var(--surf2);
+    color: var(--mut);
+    font: 600 0.82rem var(--f-body);
+    cursor: pointer;
+    transition:
+      border-color 0.2s,
+      color 0.2s;
+
+    small {
+      font-size: 0.7rem;
+    }
+
+    &:hover {
+      border-color: var(--acc);
+    }
+
+    &.on {
+      background: var(--acc);
+      border-color: var(--acc);
+      color: var(--bg);
+    }
+  }
+}

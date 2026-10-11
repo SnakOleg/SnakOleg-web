@@ -1,86 +1,63 @@
-import { useState } from "preact/compat";
-import React from "react";
-import styles from "./ProjectCard.module.scss";
-import { Icon } from "@/components/Icons/IconProvider";
-import { TechIcon } from "@/components/Icons/TechIcon";
-import { techNames, type TechName } from "@/constants/techNames";
+import { site } from "../../config";
+import type { projects } from "../../config/projects";
+import { tx } from "../../lib/i18n";
+import type { L } from "../../lib/i18n";
+import { Ico } from "../ui/Icon";
+import { Num } from "../ui/Num";
+import { Banner } from "../graphics/Banner";
 
-interface ProjectCardProps {
-    project: {
-        title: string;
-        description: string;
-        tech: TechName[];
-        link: string;
-        image?: string;
-    };
-    index: number;
-    copiedIndex: number | null;
-    handleCardClick: (_link: string) => void;
-    handleCopyLink: (_e: React.MouseEvent<HTMLButtonElement>, _link: string, _index: number) => void;
+type Project = (typeof projects)[number];
+export const slugOf = (p: { name: string }) =>
+  p.name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 
-    translations: {
-        aria: {
-            project_link: string;
-        };
-    };
-}
+export const group = (s: string) => (s === "paused" || s === "archive" ? "inactive" : s);
 
-export const ProjectCard: React.FC<ProjectCardProps> = ({
-                                                            project,
-                                                            index,
-                                                            copiedIndex,
-                                                            handleCardClick,
-                                                            handleCopyLink,
-                                                            translations,
-                                                        }) => {
-    const [localImage] = useState(project.image ?? "/");
-
-    return (
-        <div
-            className={styles["project-card"]}
-            onClick={() => { handleCardClick(project.link); }}
-            role="button"
-            tabIndex={0}
-        >
-            <div className={styles["project-image"]}>
-                <img
-                    src={localImage}
-                    alt={project.title}
-                    className={styles["project-preview"]}
-                    draggable={false}
-                    onContextMenu={(e) => { e.preventDefault(); }}
-                />
+export function ProjectCard({ p, l, i }: { p: Project; l: L; i: number }) {
+  const u = site.ui[l];
+  return (
+    <li style={{ "--i": i % 6 }}>
+      <a class="card" href={`#/p/${slugOf(p)}`}>
+        <Banner h={p.hue} g={p.glyph} img={p.img} />
+        <div class="cb">
+          <div class="ct">
+            <Ico n="code" />
+            <b>{p.name}</b>
+            <Ico n="arrow-right" />
+          </div>
+          <div class="badges">
+            <span class={"st k-" + p.kind}>{u.kinds[p.kind]}</span>
+            <span class={"st s-" + group(p.state)}>
+              <i />
+              {p.status ? tx(p.status, l) : u.states[p.state]}
+            </span>
+          </div>
+          <p>{tx(p.desc, l)}</p>
+          {p.stats && (
+            <div class="stats">
+              <div>
+                <Num to={p.stats.servers} />
+                {u.servers}
+              </div>
+              <div>
+                <Num to={p.stats.users} />
+                {u.users}
+              </div>
+              <div>
+                <Num to={p.stats.commands} />
+                {u.commands}
+              </div>
             </div>
-
-            <div className={styles["project-content"]}>
-                <div className={styles["project-header"]}>
-                    <Icon name="Code" className={styles["project-icon"]} />
-                    <h3 className={styles["project-title"]}>{project.title}</h3>
-                    <button
-                        className={styles["project-link"]}
-                        onClick={(e) => { handleCopyLink(e, project.link, index); }}
-                        aria-label={translations.aria.project_link}
-                    >
-                        <Icon name="Link" />
-                        {copiedIndex === index && (
-                            <span className={styles["tooltip"]}>Copied!</span>
-                        )}
-                    </button>
-                </div>
-
-                <p className={styles["project-description"]}>{project.description}</p>
-
-                <div className={styles["tech-stack"]}>
-                    {project.tech.map((tech) => (
-                        <TechIcon
-                            key={tech}
-                            name={tech}
-                            className={styles["tech-icon"]}
-                            title={techNames[tech]}
-                        />
-                    ))}
-                </div>
-            </div>
+          )}
+          <div class="tech">
+            {p.tags.map((s) => (
+              <i>{s}</i>
+            ))}
+          </div>
         </div>
-    );
-};
+      </a>
+    </li>
+  );
+}

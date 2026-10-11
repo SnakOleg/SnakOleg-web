@@ -1,0 +1,39 @@
+.foot {
+  position: relative;
+  z-index: 1;
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 1rem;
+}
+.mark {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  .dt {
+    fill: var(--acc);
+  }
+}
+.fb2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  color: var(--mut);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+  a {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition:
+      color 0.2s,
+      transform 0.2s;
+    &:hover {
+      color: var(--ink);
+      transform: translateY(-2px);
+    }
+  }
+}

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>404</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #e8e4f1;
+        --ink: #2a2640;
+        --mut: #6b6788;
+        --acc: #7a5cd6;
+        --line: #d6cfe4;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #1b1c1f;
+          --ink: #ececee;
+          --mut: #9b9da5;
+          --acc: #a78bfa;
+          --line: #38393f;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        display: grid;
+        place-content: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 1.5rem;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          400 1rem/1.6 system-ui,
+          sans-serif;
+        text-align: center;
+      }
+      h1 {
+        margin: 0;
+        color: var(--acc);
+        font-size: clamp(5rem, 22vw, 11rem);
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.04em;
+      }
+      p {
+        margin: 0.6rem 0 0;
+        color: var(--mut);
+      }
+      a {
+        display: inline-block;
+        margin-top: 1.6rem;
+        padding: 0.6rem 1.4rem;
+        border: 1px solid var(--line);
+        border-radius: 3rem;
+        color: var(--ink);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .game {
+        margin-top: 1.4rem;
+      }
+      canvas {
+        display: block;
+        width: min(320px, 86vw);
+        height: auto;
+        aspect-ratio: 1;
+        margin: 0 auto;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        touch-action: none;
+      }
+      .stat {
+        color: var(--ink);
+      }
+      .hint {
+        min-height: 1.6em;
+        font-size: 0.85rem;
+      }
+      :root {
+        --surf: #f3f0f8;
+        --acc2: #c0348a;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --surf: #25262a;
+          --acc2: #f472b6;
+        }
+      }
+      a:hover,
+      a:focus-visible {
+        border-color: var(--acc);
+        outline: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>404</h1>
+      <p>Такой страницы нет. Пока ищете дорогу, поймайте пару багов.</p>
+      <p lang="en">This page does not exist.</p>
+      <div class="game">
+        <canvas
+          id="game"
+          width="320"
+          height="320"
+          role="img"
+          aria-label="Мини-игра: змейка ловит баги"
+        ></canvas>
+        <p class="stat">Баги: <b id="score">0</b> · Рекорд: <b id="best">0</b></p>
+        <p id="hint" class="hint" aria-live="polite"></p>
+      </div>
+      <a href="/">На главную / Home</a>
+    </main>
+    <script src="/404-game.js" defer></script>
+  </body>
+</html>

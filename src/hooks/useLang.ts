@@ -1,10 +1,27 @@
-import ru from "../i18n/ru.json";
-import en from "../i18n/en.json";
+import { useEffect, useState } from "preact/hooks";
+import type { L } from "../lib/i18n";
 
-type Translations = typeof ru;
+const KEY = "snak-lang";
 
-const translations = { ru, en };
+export function useLang() {
+  const [l, setL] = useState<L>(() => {
+    try {
+      const saved = localStorage.getItem(KEY);
+      if (saved === "ru" || saved === "en") return saved;
+    } catch {
+      // storage can be blocked
+    }
+    return "ru";
+  });
 
-export function useLang(lang: "ru" | "en" = "ru"): Translations {
-    return translations[lang];
+  useEffect(() => {
+    document.documentElement.lang = l;
+    try {
+      localStorage.setItem(KEY, l);
+    } catch {
+      // ignore
+    }
+  }, [l]);
+
+  return [l, setL] as const;
 }

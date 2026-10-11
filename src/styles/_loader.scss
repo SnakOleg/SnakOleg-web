@@ -1,0 +1,58 @@
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: var(--bg);
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.8rem;
+  transition:
+    opacity 0.6s,
+    visibility 0s 0.6s;
+}
+.loader.gone {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.lm {
+  font: 800 4rem/1 var(--f-head);
+  color: var(--acc);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+.lp {
+  font: 600 0.9rem var(--f-head);
+  color: var(--mut);
+}
+.lb {
+  width: 11rem;
+  height: 3px;
+  background: var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+  i {
+    display: block;
+    height: 100%;
+    background: var(--acc);
+  }
+}
+@keyframes pulse {
+  50% {
+    transform: scale(0.92);
+    opacity: 0.7;
+  }
+}
+
+.rv {
+  opacity: 0;
+  transform: translateY(1.2rem);
+  transition:
+    opacity 0.7s ease-out,
+    transform 0.7s ease-out;
+  transition-delay: calc(var(--i, 0) * 90ms);
+  &.in {
+    opacity: 1;
+    transform: none;
+  }
+}

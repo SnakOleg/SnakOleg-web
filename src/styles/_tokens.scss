@@ -1,0 +1,57 @@
+@mixin dark {
+  --bg: hsl(240 4% 10%);
+  --surf: hsl(240 4% 14%);
+  --surf2: hsl(240 4% 18%);
+  --line: hsl(240 3% 24%);
+  --ink: hsl(240 10% 93%);
+  --mut: hsl(240 5% 63%);
+  --acc: hsl(var(--h) 90% 76%);
+  --dot: rgba(255, 255, 255, 0.13);
+  --acc2: hsl(calc(var(--h) + 55) 85% 72%);
+  --ok: #62d395;
+  --warn: #f0b34a;
+  --bad: #ff7a8d;
+}
+:root {
+  --f-head: Unbounded, system-ui, sans-serif;
+  --f-body: "Golos Text", system-ui, sans-serif;
+  --h: 255;
+  --bg: hsl(var(--h) 28% 91%);
+  --surf: hsl(var(--h) 32% 95%);
+  --surf2: hsl(var(--h) 28% 90%);
+  --line: hsl(var(--h) 22% 82%);
+  --ink: hsl(var(--h) 30% 18%);
+  --mut: hsl(var(--h) 14% 42%);
+  --acc: hsl(var(--h) 52% 52%);
+  --dot: rgba(40, 36, 70, 0.12);
+  --acc2: hsl(calc(var(--h) + 55) 50% 50%);
+  --ok: #1e7a45;
+  --warn: #8a5a00;
+  --bad: #b8243c;
+  --mx: 50vw;
+  --my: 30vh;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    @include dark;
+  }
+}
+:root[data-theme="dark"] {
+  @include dark;
+}
+
+:root[data-font="onest"] {
+  --f-head: Onest, system-ui, sans-serif;
+  --f-body: Onest, system-ui, sans-serif;
+}
+:root[data-font="mono"] {
+  --f-head: "JetBrains Mono", ui-monospace, monospace;
+  --f-body: "JetBrains Mono", ui-monospace, monospace;
+}
+html.retro {
+  --f-head: "Press Start 2P", "Courier New", monospace;
+  --f-body: "Pixelify Sans", "Courier New", monospace;
+}

@@ -1,0 +1,84 @@
+// Blog constants and small helpers shared by the API and the site.
+export const EMOJI = ["👍", "❤️", "🔥", "😂", "🎉", "🤔"] as const;
+export const MAX_REACTIONS_PER_TARGET = 3;
+export const COMMENT_MAX = 1000;
+export const EDIT_WINDOW_MS = 15 * 60_000;
+export const REPORTS_TO_FLAG = 3;
+
+export type BlogSettings = {
+  /** master switch for new comments */
+  commentsOpen: boolean;
+  /** seconds a user must wait between comments */
+  slowMode: number;
+  /** hold the first comments of new users until the owner approves them */
+  premod: boolean;
+  /** comments per user per day */
+  perDay: number;
+  /** theme suggestions: accepting, and how many per user per day */
+  themesOpen: boolean;
+  themesPerDay: number;
+};
+
+export const DEFAULT_SETTINGS: BlogSettings = {
+  commentsOpen: true,
+  slowMode: 10,
+  premod: false,
+  perDay: 40,
+  themesOpen: true,
+  themesPerDay: 3,
+};
+
+const num = (v: unknown, min: number, max: number, d: number) =>
+  typeof v === "number" && Number.isFinite(v) ? Math.min(max, Math.max(min, Math.round(v))) : d;
+
+export function normalizeSettings(v: unknown): BlogSettings {
+  const o = (v && typeof v === "object" ? v : {}) as Record<string, unknown>;
+  const d = DEFAULT_SETTINGS;
+  return {
+    commentsOpen: typeof o.commentsOpen === "boolean" ? o.commentsOpen : d.commentsOpen,
+    slowMode: num(o.slowMode, 0, 600, d.slowMode),
+    premod: typeof o.premod === "boolean" ? o.premod : d.premod,
+    perDay: num(o.perDay, 1, 500, d.perDay),
+    themesOpen: typeof o.themesOpen === "boolean" ? o.themesOpen : d.themesOpen,
+    themesPerDay: num(o.themesPerDay, 1, 50, d.themesPerDay),
+  };
+}
+
+/** Plain text taken from Markdown, for excerpts, search and the RSS feed. */
+export function plainText(md: string) {
+  return md
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/^>\s*\[![A-Za-z]+\]\s*/gm, "")
+    .replace(/[#>*_`~|=]/g, "")
+    .replace(/\|\|/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function excerptOf(md: string, max = 220) {
+  const t = plainText(md);
+  if (t.length <= max) return t;
+  return t.slice(0, max).replace(/\s+\S*$/, "") + "…";
+}
+
+export const readMinutes = (md: string) =>
+  Math.max(1, Math.round((plainText(md).match(/\S+/g)?.length ?? 0) / 200));
+
+/** Comment/post text: no control characters, normalised newlines, no more than two blank lines. */
+export const cleanText = (v: unknown, max: number) =>
+  String(v ?? "")
+    .replace(/\r\n?/g, "\n")
+    .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f​-‏‪-‮⁦-⁩]/g, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim()
+    .slice(0, max);
+
+/** One line of plain text: control characters and angle brackets dropped, spaces collapsed. */
+export const cleanLine = (v: unknown, max: number) =>
+  String(v ?? "")
+    .replace(/[\u0000-\u001f<>]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, max);

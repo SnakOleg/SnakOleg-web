@@ -1,0 +1,8 @@
+ALTER TABLE seen ADD COLUMN views INTEGER NOT NULL DEFAULT 1;
+
+CREATE TABLE clicked (
+  day TEXT NOT NULL,
+  vid TEXT NOT NULL,
+  link TEXT NOT NULL,
+  PRIMARY KEY (day, vid, link)
+) WITHOUT ROWID;

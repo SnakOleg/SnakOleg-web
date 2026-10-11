@@ -1,0 +1,38 @@
+.statrow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  list-style: none;
+  margin: 0 0 5rem;
+  padding: 0;
+  li {
+    text-align: center;
+    padding: 1.2rem 0.5rem;
+    background: var(--surf);
+    border: 1px solid var(--line);
+    border-radius: 1.2rem;
+    transition:
+      border-color 0.25s,
+      transform 0.25s;
+    &:hover {
+      border-color: var(--acc);
+      transform: translateY(-3px);
+    }
+  }
+  b {
+    display: block;
+    font: 800 clamp(1.5rem, 4vw, 2.2rem)/1.2 var(--f-head);
+    color: var(--acc);
+  }
+  span {
+    color: var(--mut);
+    font-size: 0.88rem;
+  }
+}
+
+@media (max-width: 48rem) {
+  .statrow {
+    grid-template-columns: repeat(2, 1fr);
+    margin-bottom: 3.5rem;
+  }
+}
