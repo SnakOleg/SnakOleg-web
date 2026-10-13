@@ -7,6 +7,7 @@ import type { CUser, PostBrief, Reactions as R } from "./api";
 import { ago, dateOf, strings } from "./strings";
 import { Avatar, Link, Menu, Name, ask, openEditor, refreshBlog, toast, useDismiss } from "./ui";
 import { site } from "../config";
+import { Teaser } from "./Teaser";
 import avatarCat from "../assets/illustrations/avatar-cat.svg";
 
 export function Reactions({
@@ -210,7 +211,7 @@ export function PostCard({ p, l, onChange }: { p: PostBrief; l: L; onChange: (p:
       <h2>
         <Link to={href}>{p.title}</Link>
       </h2>
-      {p.excerpt && <p class="ex">{p.excerpt}</p>}
+      {p.excerpt && <Teaser src={p.excerpt} class="ex" />}
       {p.cover && (
         <Link to={href} aria-label={p.title}>
           <img

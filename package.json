@@ -15,6 +15,7 @@
     "db:migrate:local": "wrangler d1 migrations apply snak-db --local",
     "db:migrate": "wrangler d1 migrations apply snak-db --remote",
     "live:deploy": "wrangler deploy -c realtime/wrangler.toml",
+    "dev:live": "wrangler dev -c realtime/wrangler.toml",
     "lint": "eslint .",
     "format": "prettier --write .",
     "check": "npm run typecheck && npm run lint && prettier --check .",

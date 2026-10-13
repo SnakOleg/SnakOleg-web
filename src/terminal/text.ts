@@ -2,6 +2,7 @@ import type { L } from "../lib/i18n";
 
 const ru = {
   welcome: "Добро пожаловать в snaksh. Напиши help, чтобы увидеть команды.",
+  devDay: "0x100-й день года. С Днём программиста! Сезонный штамп уже в паспорте.",
   help: [
     "about        обо мне",
     "skills       мой стек",
@@ -39,19 +40,13 @@ const ru = {
   catUsage: "Использование: cat <файл>",
   origin:
     "СНАК. Ник, который я придумал, когда смотрел Кови на YouTube: на его майнкрафт-сервере была привилегия «СНАК». Не еда и не змея.",
-  fortunes: [
-    "Сегодня ты найдёшь баг, которого там не было.",
-    "Коммит в пятницу вечером принесёт приключения.",
-    "Работает? Не трогай.",
-    "Скоро кто-то скажет: «а у меня на машине работает».",
-    "Хороший день, чтобы наконец написать тесты.",
-    "Кофе остыл, но идея осталась.",
-  ],
   sandwich: "Хорошо.",
   noSandwich: "Что? Сделай сам.",
   sudo: "guest нет в списке sudoers. Об этом инциденте будет сообщено.",
   vimHint: "Подсказка: выход через :q (а если не пускает, то :q!)",
-  hackDone: "ДОСТУП РАЗРЕШЁН. Это сайт-портфолио, ломать тут нечего. Но спасибо, что заглянул.",
+  hackDone: "ДОСТУП РАЗРЕШЁН | Выданы все доступы и повышены разрешения.",
+  hackFail:
+    "ДОСТУП ОГРАНИЧЕН | С этого момента все твои данные и последующие действия записываются. Не балуйся.",
   rmDone: "...шучу. Ничего не удалено, ты в браузере.",
   stamps: (n: number, all: number) =>
     `Штампов в паспорте: ${n} из ${all}. Напиши passport, чтобы посмотреть.`,
@@ -59,6 +54,7 @@ const ru = {
 };
 const en: typeof ru = {
   welcome: "Welcome to snaksh. Type help to see the commands.",
+  devDay: "Day 0x100 of the year. Happy Programmers' Day! The seasonal stamp is in your passport.",
   help: [
     "about        about me",
     "skills       my stack",
@@ -96,19 +92,12 @@ const en: typeof ru = {
   catUsage: "Usage: cat <file>",
   origin:
     "SNAK. A nickname I came up with while watching Kovi on YouTube: his Minecraft server had a privilege called SNAK. Not the food, not the snake.",
-  fortunes: [
-    "Today you will find a bug that was not there before.",
-    "A Friday evening commit will bring adventure.",
-    "It works? Do not touch it.",
-    "Soon someone will say: it works on my machine.",
-    "A good day to finally write the tests.",
-    "The coffee went cold, but the idea stayed.",
-  ],
   sandwich: "Okay.",
   noSandwich: "What? Make it yourself.",
   sudo: "guest is not in the sudoers file. This incident will be reported.",
   vimHint: "Hint: leave with :q (and if it refuses, :q!)",
-  hackDone: "ACCESS GRANTED. This is a portfolio site, there is nothing to hack. Thanks for dropping by.",
+  hackDone: "ACCESS GRANTED | All access issued, permissions elevated.",
+  hackFail: "ACCESS RESTRICTED | From now on all your data and further actions are being logged. Behave.",
   rmDone: "...just kidding. Nothing was deleted, you are in a browser.",
   stamps: (n, all) => `Stamps in your passport: ${n} of ${all}. Type passport to look.`,
   cowAsk: "cowsay: what should the cow say?",

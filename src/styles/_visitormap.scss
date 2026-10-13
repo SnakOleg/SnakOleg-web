@@ -2,6 +2,7 @@
   margin: 0 0 5rem;
   animation: bp-in 0.7s ease-out;
   .vmh {
+    margin-bottom: 1rem;
     display: flex;
     align-items: baseline;
     justify-content: space-between;
@@ -21,7 +22,11 @@
     font-size: 0.9rem;
   }
   .vmwrap {
+    position: relative;
+    left: 50%;
+    width: min(calc(100vw - 2.5rem), 78rem);
     padding: 1rem;
+    translate: -50% 0;
     border: 1px solid var(--line);
     border-radius: var(--r-lg);
     background: var(--surf);

@@ -75,3 +75,73 @@
     animation: none;
   }
 }
+
+.rocket {
+  position: fixed;
+  bottom: -6rem;
+  left: 8%;
+  z-index: 2;
+  width: 2.4rem;
+  pointer-events: none;
+  animation: wx-rocket 22s ease-in infinite;
+
+  .hull {
+    fill: #f2f2f5;
+    stroke: #8a8fa3;
+    stroke-width: 1.5;
+  }
+  .port {
+    fill: #6fbce8;
+  }
+  .fin {
+    fill: #e0467a;
+  }
+  .flame {
+    fill: #ffb347;
+    animation: wx-flicker 0.15s steps(2) infinite;
+  }
+}
+@keyframes wx-rocket {
+  0%,
+  60% {
+    transform: translate(0, 0) rotate(18deg);
+  }
+  100% {
+    transform: translate(80vw, -120vh) rotate(18deg);
+  }
+}
+@keyframes wx-flicker {
+  50% {
+    opacity: 0.6;
+  }
+}
+.binary {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+
+  span {
+    position: absolute;
+    top: -40%;
+    color: #3fbf6a;
+    font:
+      600 0.8rem/1.2 ui-monospace,
+      monospace;
+    opacity: 0.22;
+    writing-mode: vertical-rl;
+    animation: wx-bits 9s linear infinite;
+  }
+}
+@keyframes wx-bits {
+  to {
+    transform: translateY(160vh);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rocket,
+  .binary {
+    display: none;
+  }
+}

@@ -137,14 +137,6 @@ export const STAMPS: StampDef[] = [
     ["The answer", "Life, the universe and everything"],
   ),
   egg(
-    "fortune",
-    "cookie",
-    "ticket",
-    300,
-    ["Предсказание", "Печенье с предсказанием есть в терминале"],
-    ["Fortune", "There is a fortune cookie in the terminal"],
-  ),
-  egg(
     "konami",
     "dpad",
     "hex",
@@ -305,6 +297,22 @@ export const STAMPS: StampDef[] = [
     ["Быстрая реакция", "Нажми быстрее 250 мс в тесте реакции"],
     ["Quick hands", "Beat 250 ms in the reaction test"],
   ),
+  act(
+    "champion",
+    "trophy",
+    "shield",
+    45,
+    ["Чемпион недели", "Лучшая реакция за неделю"],
+    ["Champion of the week", "Best reaction time of a week"],
+  ),
+  egg(
+    "rareguest",
+    "paw",
+    "postmark",
+    20,
+    ["Редкий гость", "Заметь в саду того, кто заходит нечасто"],
+    ["Rare guest", "Spot someone in the garden who rarely shows up"],
+  ),
 ];
 
 export const EGGS = new Set(STAMPS.filter((s) => s.kind === "egg").map((s) => s.id));
@@ -314,7 +322,7 @@ export const stampDef = (id: string) => STAMPS.find((s) => s.id === id);
 export const isCountryStamp = (code: string) =>
   /^c:[A-Z]{2}$/.test(code) && code !== "c:XX" && code !== "c:T1";
 
-export type Season = "newyear" | "halloween" | "valentine";
+export type Season = "newyear" | "halloween" | "valentine" | "aprilfools" | "cosmos" | "programmer";
 
 export function seasonOf(d = new Date()): Season | null {
   const m = d.getMonth() + 1;
@@ -322,6 +330,9 @@ export function seasonOf(d = new Date()): Season | null {
   if ((m === 12 && day >= 20) || (m === 1 && day <= 10)) return "newyear";
   if ((m === 10 && day >= 24) || (m === 11 && day <= 2)) return "halloween";
   if (m === 2 && day >= 12 && day <= 15) return "valentine";
+  if (m === 4 && day === 1) return "aprilfools";
+  if (m === 4 && day >= 11 && day <= 13) return "cosmos";
+  if (m === 9 && day >= 12 && day <= 14) return "programmer";
   return null;
 }
 
@@ -333,4 +344,5 @@ export function seasonStamp(d = new Date()) {
   return `s:${s}:${year}`;
 }
 
-export const isSeasonStamp = (code: string) => /^s:(newyear|halloween|valentine):\d{4}$/.test(code);
+export const isSeasonStamp = (code: string) =>
+  /^s:(newyear|halloween|valentine|aprilfools|cosmos|programmer):\d{4}$/.test(code);

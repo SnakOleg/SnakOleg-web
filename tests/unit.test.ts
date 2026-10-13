@@ -95,9 +95,12 @@ test("spam scoring labels ads, invites and abuse but not ordinary comments", () 
 
 test("blog helpers: excerpts, reading time, settings bounds", () => {
   assert.equal(
-    excerptOf("# Title\n\nSome **bold** text with [a link](https://x.y)."),
-    "Title\nSome bold text with a link.",
+    excerptOf(
+      "# Title\n\nSome **bold** text with [a link](https://x.y).\n\n```js\nx()\n```\n- one\n> [!TIP] tip",
+    ),
+    "Some **bold** text with [a link](https://x.y).\n- one\ntip",
   );
+  assert.equal(excerptOf("a".repeat(50) + "\n" + "b ".repeat(200), 100).endsWith("…"), true);
   assert.equal(readMinutes("word ".repeat(450)), 2);
   const s = normalizeSettings({ slowMode: 99999, perDay: "x", premod: true });
   assert.equal(s.slowMode, 600);

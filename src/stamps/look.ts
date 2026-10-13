@@ -8,6 +8,9 @@ const SEASONS = {
   newyear: { icon: "tree", hue: 150, ru: "Новый год", en: "New Year" },
   halloween: { icon: "pumpkin", hue: 28, ru: "Хэллоуин", en: "Halloween" },
   valentine: { icon: "heart", hue: 345, ru: "День влюблённых", en: "Valentine's Day" },
+  aprilfools: { icon: "mask", hue: 300, ru: "1 апреля", en: "April Fools' Day" },
+  cosmos: { icon: "moon", hue: 230, ru: "День космонавтики", en: "Cosmonautics Day" },
+  programmer: { icon: "code", hue: 130, ru: "День программиста", en: "Programmers' Day" },
 };
 
 export function lookOf(code: string, l: L): Look | null {
@@ -33,7 +36,7 @@ export function lookOf(code: string, l: L): Look | null {
       sub: name.length > 12 ? cc : name,
     };
   }
-  const m = /^s:(newyear|halloween|valentine):(\d{4})$/.exec(code);
+  const m = /^s:(newyear|halloween|valentine|aprilfools|cosmos|programmer):(\d{4})$/.exec(code);
   if (m) {
     const s = SEASONS[m[1] as keyof typeof SEASONS];
     return { icon: s.icon, frame: "rosette", hue: s.hue, title: s[l], hint: "", sub: m[2] };

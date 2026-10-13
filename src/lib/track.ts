@@ -1,3 +1,5 @@
+import { timeZone } from "./tz";
+
 const KEY = "snak-clicked";
 const counted = new Set<string>();
 
@@ -36,7 +38,13 @@ export function startTracking() {
   try {
     if (!sessionStorage.getItem("pv")) {
       sessionStorage.setItem("pv", "1");
-      send({ t: "pv", p: location.pathname, r: document.referrer, l: document.documentElement.lang });
+      send({
+        t: "pv",
+        p: location.pathname,
+        r: document.referrer,
+        l: document.documentElement.lang,
+        z: timeZone(),
+      });
     }
   } catch {
     // no storage

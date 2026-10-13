@@ -13,6 +13,7 @@ export function useType(words: string[]) {
       setS(w.slice(0, j));
       let d = del ? 30 : 65;
       if (!del && j === w.length) {
+        if (words.length === 1) return;
         del = true;
         d = 1500;
       } else if (del && j === 0) {

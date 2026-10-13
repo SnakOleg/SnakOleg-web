@@ -8,6 +8,21 @@ const t = (x: number, y: number, size: number, s: string) => (
 
 // Drawn on a 48 by 48 grid with one stroke width, so every stamp reads as the same hand.
 export const ICONS: Record<string, ComponentChildren> = {
+  trophy: (
+    <>
+      <path d="M15 8h18v10a9 9 0 0 1-18 0z" />
+      <path d="M15 12H8q0 9 8 10M33 12h7q0 9-8 10M24 27v8M16 40h16M19 35h10" />
+    </>
+  ),
+  paw: (
+    <>
+      <path d="M15 34q0-9 9-9t9 9q0 6-9 5t-9-5z" />
+      <circle cx="13" cy="21" r="3.4" />
+      <circle cx="20" cy="14" r="3.4" />
+      <circle cx="28" cy="14" r="3.4" />
+      <circle cx="35" cy="21" r="3.4" />
+    </>
+  ),
   terminal: (
     <>
       <rect x="5" y="9" width="38" height="30" rx="4" />
@@ -83,13 +98,6 @@ export const ICONS: Record<string, ComponentChildren> = {
     <>
       <circle cx="24" cy="24" r="18" />
       {t(24, 25, 17, "42")}
-    </>
-  ),
-  cookie: (
-    <>
-      <path d="M6 28q18-22 36 0-18 10-36 0z" />
-      <path d="M24 17q-6 8 0 20" />
-      <path d="M33 33l9 6" />
     </>
   ),
   dpad: (

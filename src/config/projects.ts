@@ -10,8 +10,8 @@ export const projects = [
     img: foxochat,
     role: t("Второй CEO, фронтенд-разработчик", "Second CEO, frontend developer"),
     details: t(
-      "Мессенджер реального времени для веба и десктопа. Я отвечал за фронтенд: интерфейс на Preact и TypeScript, состояние на MobX, десктопная сборка на Tauri. Проект командный, сейчас заморожен.",
-      "A realtime messenger for web and desktop. I was responsible for the frontend: the interface in Preact and TypeScript, state in MobX, the desktop build in Tauri. A team project, currently frozen.",
+      "Минималистичный мессенджер для общения, вдохновлённый дизайном Telegram и Discord. Сейчас проект отправлен в бэклог неопределённого будущего.",
+      "A minimalist messenger inspired by the design of Telegram and Discord. The project now sits in the backlog of an uncertain future.",
     ),
     href: "https://foxochat.app",
     hue: 265,
@@ -19,30 +19,30 @@ export const projects = [
     tags: ["Preact", "TypeScript", "MobX", "Tauri"],
     kind: "team",
     state: "paused",
-    status: t("Заморожен", "Frozen"),
+    status: t("В бэклоге", "In the backlog"),
     desc: t(
-      "Мессенджер реального времени для веба и десктопа. Второй CEO и фронтенд-разработчик командного проекта.",
-      "A realtime messenger for web and desktop. I'm the second CEO and frontend developer of this team project.",
+      "Минималистичный мессенджер для общения, вдохновлённый дизайном Telegram и Discord. Сейчас проект отправлен в бэклог неопределённого будущего.",
+      "A minimalist messenger inspired by the design of Telegram and Discord. The project now sits in the backlog of an uncertain future.",
     ),
   },
   {
     name: "MatrixBot",
     role: t("Автор и разработчик", "Author and developer"),
     details: t(
-      "Многофункциональный Discord-бот: команды для развлечений, инструменты модерации и администрирования. На пике бот работал на 4 608 серверах и обработал 270 107 команд (статистика на 23.07.2024). Сейчас бот отключён.",
-      "A multi-purpose Discord bot: fun commands plus moderation and administration tools. At its peak it served 4,608 servers and handled 270,107 commands (stats as of 23.07.2024). The bot is switched off now.",
+      "Многофункциональный Discord-бот, который помогал модерации серверов автоматизировать и ускорить рутину. Кроме модерации, были команды для развлечений и прочего. Сейчас проект завершил свой жизненный цикл. Статистика на 23.07.2024.",
+      "A multi-purpose Discord bot that helped server moderators automate and speed up routine work. Besides moderation it had fun commands and more. The project has now reached the end of its life. Stats as of 23.07.2024.",
     ),
     href: "https://matrixbot-web.pages.dev/",
     hue: 250,
     glyph: "M",
     tags: ["Node.js", "JavaScript", "MongoDB"],
     kind: "personal",
-    state: "paused",
-    status: t("Отключён", "Switched off"),
+    state: "done",
+    status: t("Завершён", "Finished"),
     stats: { servers: 4608, users: 200879, commands: 270107 },
     desc: t(
-      "Многофункциональный Discord-бот: от развлечений до инструментов модерации. Статистика на 23.07.2024.",
-      "A multi-purpose Discord bot, from fun commands to moderation tools. Stats as of 23.07.2024.",
+      "Многофункциональный Discord-бот, который помогал модерации серверов автоматизировать и ускорить рутину. Кроме модерации, были команды для развлечений и прочего. Сейчас проект завершил свой жизненный цикл.",
+      "A multi-purpose Discord bot that helped server moderators automate and speed up routine work. Besides moderation it had fun commands and more. The project has now reached the end of its life.",
     ),
   },
   {
@@ -50,8 +50,8 @@ export const projects = [
     repo: "matrixbot-api",
     role: t("Автор", "Author"),
     details: t(
-      "Серверная часть для моего Discord-бота MatrixBot: API, через которое бот и сайт получают данные.",
-      "The server side of my Discord bot MatrixBot: the API that the bot and its site get data from.",
+      "API для моего Discord-бота: через него бот работал с базой данных, а ещё отправлял статистику в Grafana и на свой сайт.",
+      "The API for my Discord bot: through it the bot talked to the database and sent its stats to Grafana and to its website.",
     ),
     href: "https://github.com/SnakOleg/matrixbot-api",
     hue: 200,
@@ -59,7 +59,10 @@ export const projects = [
     tags: ["Node.js", "API"],
     kind: "personal",
     state: "paused",
-    desc: t("API для моего Discord-бота MatrixBot.", "API for my Discord bot MatrixBot."),
+    desc: t(
+      "API для моего Discord-бота: через него бот работал с базой данных, а ещё отправлял статистику в Grafana и на свой сайт.",
+      "The API for my Discord bot: through it the bot talked to the database and sent its stats to Grafana and to its website.",
+    ),
   },
   {
     name: "Namix",
@@ -67,8 +70,8 @@ export const projects = [
     repoUrl: "https://github.com/SnakOleg/namix-site",
     role: t("Разработка по заказу", "Built for a client"),
     details: t(
-      "Сайт для Discord-сообщества, сделан на заказ на Vue и TypeScript.",
-      "A website for a Discord community, built for a client with Vue and TypeScript.",
+      "Небольшой заказной сайт по готовому дизайну для Discord-сообщества.",
+      "A small client site for a Discord community, built from a ready design.",
     ),
     href: "https://namix-site.pages.dev/",
     hue: 160,
@@ -76,7 +79,10 @@ export const projects = [
     tags: ["Vue", "TS"],
     kind: "order",
     state: "done",
-    desc: t("Сайт для Discord-сообщества.", "A website for a Discord community."),
+    desc: t(
+      "Небольшой заказной сайт по готовому дизайну для Discord-сообщества.",
+      "A small client site for a Discord community, built from a ready design.",
+    ),
   },
   {
     name: "Hotel",
@@ -84,8 +90,8 @@ export const projects = [
     repoUrl: "https://github.com/SnakOleg/hotel",
     role: t("Разработка по заказу", "Built for a client"),
     details: t(
-      "Сайт для зоны отдыха на Азовском море, сделан на заказ на Nuxt и Vue.",
-      "A website for a recreation area on the Sea of Azov, built for a client with Nuxt and Vue.",
+      "Заказной сайт для базы отдыха на Азовском море.",
+      "A client site for a holiday resort on the Sea of Azov.",
     ),
     href: "https://hotel-aql.pages.dev/",
     hue: 30,
@@ -93,7 +99,10 @@ export const projects = [
     tags: ["Nuxt", "Vue"],
     kind: "order",
     state: "done",
-    desc: t("Сайт для зоны отдыха на Азовском море.", "A website for a recreation area on the Sea of Azov."),
+    desc: t(
+      "Заказной сайт для базы отдыха на Азовском море.",
+      "A client site for a holiday resort on the Sea of Azov.",
+    ),
   },
   {
     name: "Sandbox",
@@ -101,8 +110,8 @@ export const projects = [
     repoUrl: "https://github.com/SnakOleg/Sandbox",
     role: t("Автор", "Author"),
     details: t(
-      "Репозиторий для практики: в ветках лежат мини-проекты, на которых я тренировал навыки.",
-      "A practice repository: its branches hold mini projects where I trained my skills.",
+      "Песочница для практики: иногда я выплёскиваю сюда фантазию и практикую навыки.",
+      "A practice sandbox where I sometimes let my imagination out and train my skills.",
     ),
     href: "https://sandbox-40f.pages.dev",
     hue: 90,
@@ -111,8 +120,8 @@ export const projects = [
     kind: "personal",
     state: "active",
     desc: t(
-      "Песочница для практики: ветки с мини-проектами, на которых я оттачивал навыки.",
-      "A practice sandbox: branches with mini projects where I sharpened my skills.",
+      "Песочница для практики: иногда я выплёскиваю сюда фантазию и практикую навыки.",
+      "A practice sandbox where I sometimes let my imagination out and train my skills.",
     ),
   },
   {
@@ -120,8 +129,8 @@ export const projects = [
     repo: "MatrixBot-python",
     role: t("Автор", "Author"),
     details: t(
-      "Первая версия бота, написанная на Python. Сейчас в архиве.",
-      "The first version of the bot, written in Python. Archived now.",
+      "Самая первая версия моего Discord-бота, написанная на Python.",
+      "The very first version of my Discord bot, written in Python.",
     ),
     href: "https://github.com/SnakOleg/MatrixBot-python",
     hue: 55,
@@ -130,7 +139,10 @@ export const projects = [
     kind: "personal",
     state: "archive",
     status: t("Архив", "Archive"),
-    desc: t("Первая версия бота на Python.", "The first version of the bot, in Python."),
+    desc: t(
+      "Самая первая версия моего Discord-бота, написанная на Python.",
+      "The very first version of my Discord bot, written in Python.",
+    ),
   },
 ] as {
   name: string;

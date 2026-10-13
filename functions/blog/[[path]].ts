@@ -1,3 +1,4 @@
+import { plainText } from "../../shared/blog";
 import type { Env } from "../api/_lib";
 
 type Assets = Env & { ASSETS: Fetcher };
@@ -31,7 +32,7 @@ export const onRequestGet: PagesFunction<Assets> = async ({ request, env, params
     const items = results
       .map(
         (p) =>
-          `<item><title>${xml(p.title)}</title><link>${url.origin}/blog/${p.id}</link><guid>${url.origin}/blog/${p.id}</guid><pubDate>${new Date(p.pub).toUTCString()}</pubDate><description>${xml(p.excerpt)}</description>${(JSON.parse(p.tags) as string[]).map((t) => `<category>${xml(t)}</category>`).join("")}</item>`,
+          `<item><title>${xml(p.title)}</title><link>${url.origin}/blog/${p.id}</link><guid>${url.origin}/blog/${p.id}</guid><pubDate>${new Date(p.pub).toUTCString()}</pubDate><description>${xml(plainText(p.excerpt))}</description>${(JSON.parse(p.tags) as string[]).map((t) => `<category>${xml(t)}</category>`).join("")}</item>`,
       )
       .join("");
     return new Response(
@@ -51,33 +52,18 @@ export const onRequestGet: PagesFunction<Assets> = async ({ request, env, params
   if (seg.length > 1 || !/^\d+$/.test(seg[0]))
     return new Response(page.body, { status: 404, headers: page.headers });
 
-  const post = await env.DB.prepare(
-    "SELECT id,title,excerpt,cover FROM posts WHERE id=? AND status='published' AND pub<=?",
-  )
+  const post = await env.DB.prepare("SELECT id,title FROM posts WHERE id=? AND status='published' AND pub<=?")
     .bind(id, now)
-    .first<{ id: number; title: string; excerpt: string; cover: string }>();
+    .first<{ id: number; title: string }>();
   if (!post) return new Response(page.body, { status: 404, headers: page.headers });
 
-  // Link previews (Telegram, Discord, search engines) read the tags in the HTML, so they are filled in here.
   const title = `${post.title} - Snak / Oleg`;
   const meta = (selector: string, value: string, attr = "content") => ({
     selector,
     value,
     attr,
   });
-  const image = post.cover ? new URL(post.cover, url.origin).href : `${url.origin}/og.jpg`;
-  const swaps = [
-    meta('meta[name="description"]', post.excerpt),
-    meta('meta[property="og:title"]', title),
-    meta('meta[property="og:description"]', post.excerpt),
-    meta('meta[property="og:url"]', `${url.origin}/blog/${post.id}`),
-    meta('meta[property="og:image"]', image),
-    meta('meta[property="og:type"]', "article"),
-    meta('meta[name="twitter:title"]', title),
-    meta('meta[name="twitter:description"]', post.excerpt),
-    meta('meta[name="twitter:image"]', image),
-    meta('link[rel="canonical"]', `${url.origin}/blog/${post.id}`, "href"),
-  ];
+  const swaps = [meta('link[rel="canonical"]', `${url.origin}/blog/${post.id}`, "href")];
   let rewriter = new HTMLRewriter().on("title", {
     element(el) {
       el.setInnerContent(title);

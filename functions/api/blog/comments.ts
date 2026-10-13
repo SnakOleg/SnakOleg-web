@@ -1,8 +1,8 @@
-import { COMMENT_MAX, GUESTBOOK, cleanText } from "../../../shared/blog";
+import { COMMENT_MAX, GUESTBOOK, GUESTBOOK_GAP_MS, GUESTBOOK_MAX, cleanText } from "../../../shared/blog";
 import { CARD_MAX, CARD_ICONS, countryOk, parseCard } from "../../../shared/cards";
 import { isSpam, scoreComment } from "../../../shared/spam";
 import { activeBan, banBody, getSettings, getUser, hashIp, publicUser, requireUser } from "../_blog";
-import { Env, geo, json, limit, localDay, notify } from "../_lib";
+import { Env, geo, json, limit, localDay, notify, trustedCountry } from "../_lib";
 import { award } from "../_stamps";
 import { reactionsFor } from "./_shared";
 
@@ -124,8 +124,18 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
   if (!post) return json({ error: "not_found" }, 404);
   if (!settings.commentsOpen || !post.comments_open) return json({ error: "closed" }, 403);
 
-  const { ip, country } = geo(request);
-  const card = cardIn ? { icon: cardIn.icon as string, c: countryOk(country) ? country : "" } : null;
+  const { ip } = geo(request);
+  if (postId === GUESTBOOK && body?.parent == null) {
+    const mine = await env.DB.prepare(
+      "SELECT COUNT(*) n, MAX(created) last FROM comments WHERE post_id=? AND user_id=? AND parent_id IS NULL AND status!='deleted'",
+    )
+      .bind(GUESTBOOK, u.id)
+      .first<{ n: number; last: number | null }>();
+    if ((mine?.n ?? 0) >= GUESTBOOK_MAX) return json({ error: "guestbook" }, 409);
+    if (mine?.last && Date.now() - mine.last < GUESTBOOK_GAP_MS) return json({ error: "guestbook_day" }, 429);
+  }
+  const where = trustedCountry(request, body?.tz) ?? "";
+  const card = cardIn ? { icon: cardIn.icon as string, c: countryOk(where) ? where : "" } : null;
   if (!u.owner) {
     if (settings.slowMode && !(await limit(env, `cs:${u.id}`, 1, settings.slowMode)))
       return json({ error: "slow", wait: settings.slowMode }, 429);

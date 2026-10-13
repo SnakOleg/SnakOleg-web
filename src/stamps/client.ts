@@ -1,4 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
+import { timeZone } from "../lib/tz";
 import { EGGS, seasonStamp } from "../../shared/stamps";
 import { api, currentMe, refreshMe } from "../blog/api";
 
@@ -79,7 +80,7 @@ export function useEarned() {
         const mine = Object.keys(local()).filter((c) => EGGS.has(c) || c.startsWith("s:"));
         if (mine.length) await api("/api/stamps", "POST", { codes: mine });
       }
-      const r = await api<{ stamps: Earned[] }>("/api/stamps");
+      const r = await api<{ stamps: Earned[] }>(`/api/stamps?tz=${encodeURIComponent(timeZone())}`);
       if (r.ok) merge(r.data.stamps);
       setSynced(true);
     })();

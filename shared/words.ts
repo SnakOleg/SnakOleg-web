@@ -12,6 +12,9 @@ const MSK = 3 * 3_600_000;
 
 export const dayNumber = (t = Date.now()) => Math.floor((t + MSK) / DAY);
 
+// Weeks start on Monday, Moscow time. Day 0 was a Thursday.
+export const weekNumber = (t = Date.now()) => Math.floor((dayNumber(t) + 3) / 7);
+
 const gcd = (a: number, b: number): number => (b ? gcd(b, a % b) : a);
 const STEP = [37, 41, 43, 47].find((s) => gcd(s, ANSWERS.length) === 1) ?? 1;
 

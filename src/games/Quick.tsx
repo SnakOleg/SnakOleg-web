@@ -6,7 +6,7 @@ import type { L } from "../lib/i18n";
 import { gameStrings } from "./strings";
 
 type Top = { ms: number; name: string; picture: string };
-type Board = { t: number; top: Top[]; mine: number | null };
+type Board = { t: number; top: Top[]; week: Top[]; champion: Top | null; mine: number | null };
 type Phase = "idle" | "wait" | "go" | "done" | "early";
 
 export function Quick({ l }: { l: L }) {
@@ -71,7 +71,6 @@ export function Quick({ l }: { l: L }) {
   const best = board?.mine ?? null;
   return (
     <div class="quick">
-      <p class="ghint">{t.quickHint}</p>
       <button type="button" class={`qpad ${phase}`} onClick={() => void tap()}>
         {phase === "idle" && t.start}
         {phase === "wait" && t.wait}
@@ -87,6 +86,21 @@ export function Quick({ l }: { l: L }) {
       </button>
       {best !== null && <p class="gnote">{t.best(best)}</p>}
       {!currentMe()?.user && <p class="gnote">{t.guest}</p>}
+      <h3>{t.weekTop}</h3>
+      <p class="gnote">{t.weekHint}</p>
+      {board?.champion && <p class="gnote">{t.champion(board.champion.name, board.champion.ms)}</p>}
+      {board && board.week.length > 0 ? (
+        <ol class="qtop">
+          {board.week.map((r, i) => (
+            <li key={i}>
+              <span>{r.name}</span>
+              <b>{t.yours(r.ms)}</b>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p class="gnote">{t.noTop}</p>
+      )}
       <h3>{t.top}</h3>
       {board && board.top.length > 0 ? (
         <ol class="qtop">

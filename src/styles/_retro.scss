@@ -284,6 +284,12 @@ html.retro {
   animation: r-spark 0.8s ease-out forwards;
 }
 
+// Two equal halves: moving by one half lands exactly where it started, so the tape never runs out.
+@keyframes r-tape {
+  to {
+    transform: translateX(-50%);
+  }
+}
 @keyframes r-scroll {
   to {
     transform: translateX(-100%);
@@ -342,7 +348,7 @@ html.retro {
   html.retro::after,
   .r-marquee span,
   .r-dvd,
-  .r-tape span,
+  .r-tape .r-track,
   .nav a[href="/uses"]::after {
     animation: none !important;
   }
@@ -457,15 +463,20 @@ html.retro {
   padding: 0.4rem 0;
   background: repeating-linear-gradient(-45deg, #ffe600 0 18px, #111 18px 36px);
   transform: rotate(-1.2deg);
+  .r-track {
+    display: flex;
+    width: max-content;
+    animation: r-tape 30s linear infinite;
+  }
   span {
-    display: inline-block;
-    padding: 0.2rem 1rem;
+    flex: none;
+    padding: 0.2rem 0;
     background: #ffe600;
     color: #111;
     font:
       700 1rem "Press Start 2P",
       monospace;
-    animation: r-scroll 18s linear infinite;
+    white-space: pre;
   }
 }
 .r-ring {

@@ -26,7 +26,16 @@ export function connect(h: Handlers, cursorsOn: () => boolean): Conn {
   let lastX = -1;
   let lastY = -1;
 
-  const open = () => {
+  let checked: Promise<boolean> | null = null;
+  const available = () =>
+    (checked ??= fetch("/api/live", { cache: "no-store" })
+      .then((r) => (r.ok ? (r.json() as Promise<{ live?: boolean }>) : null))
+      .then((d) => d?.live === true)
+      .catch(() => false));
+
+  const open = async () => {
+    if (stopped || ws || document.hidden) return;
+    if (!(await available())) return;
     if (stopped || ws || document.hidden) return;
     const url = new URL("/api/live", location.href);
     url.protocol = location.protocol === "https:" ? "wss:" : "ws:";
@@ -59,7 +68,7 @@ export function connect(h: Handlers, cursorsOn: () => boolean): Conn {
       h.count(0);
       if (stopped || document.hidden) return;
       retry = Math.min(retry + 1, 8);
-      timer = window.setTimeout(open, Math.min(2 ** retry * 1000, 5 * 60_000));
+      timer = window.setTimeout(() => void open(), Math.min(2 ** retry * 1000, 5 * 60_000));
     };
   };
 
@@ -89,14 +98,14 @@ export function connect(h: Handlers, cursorsOn: () => boolean): Conn {
       hiddenTimer = window.setTimeout(() => ws?.close(1000), HIDDEN_CLOSE_MS);
     } else {
       clearTimeout(timer);
-      open();
+      void open();
     }
   };
 
   addEventListener("pointermove", onMove, { passive: true });
   document.addEventListener("pointerout", onOut);
   document.addEventListener("visibilitychange", onVisible);
-  open();
+  void open();
 
   return {
     setCursors(on: boolean) {

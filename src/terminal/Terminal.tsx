@@ -7,12 +7,17 @@ import { SKIES } from "../weather/prefs";
 import type { Sky, WxPrefs } from "../weather/prefs";
 import { NAMES, run } from "./commands";
 import type { Ctx, Line } from "./commands";
+import { inDialog } from "../lib/modal";
+import { seasonOf } from "../../shared/stamps";
 import { HOME, list, resolve, show } from "./fs";
 import { text } from "./text";
 import "./terminal.scss";
 
 export const TERMINAL_EVENT = "snak-terminal";
 export const openTerminal = () => dispatchEvent(new Event(TERMINAL_EVENT));
+
+// The key left of 1 on any layout: backquote, tilde, or the Russian yo.
+const isTick = (e: KeyboardEvent) => e.code === "Backquote" || ["`", "~", "ё", "Ё"].includes(e.key);
 
 const VIM = ["~", "~       VIM - Vi IMproved", "~", "~       type  :q  and press Enter to exit", "~", "~"];
 
@@ -51,7 +56,7 @@ export function Terminal({ l, setL, th, setTh, wx, setWx, retro, setRetro, earne
   useEffect(() => {
     const toggle = () => setOpen((o) => !o);
     const key = (e: KeyboardEvent) => {
-      if (e.code !== "Backquote" || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (!isTick(e) || e.metaKey || e.ctrlKey || e.altKey || inDialog()) return;
       if ((e.target as HTMLElement | null)?.closest("input, textarea, select, [contenteditable]")) return;
       e.preventDefault();
       toggle();
@@ -67,7 +72,10 @@ export function Terminal({ l, setL, th, setTh, wx, setWx, retro, setRetro, earne
   useEffect(() => {
     if (!open) return;
     found("terminal");
-    if (!lines.length) setLines([text(l).welcome]);
+    if (!lines.length)
+      setLines(
+        seasonOf() === "programmer" ? [text(l).welcome, { t: text(l).devDay, c: "ok" }] : [text(l).welcome],
+      );
     input.current?.focus();
     const esc = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
     addEventListener("keydown", esc);
@@ -171,7 +179,7 @@ export function Terminal({ l, setL, th, setTh, wx, setWx, retro, setRetro, earne
   };
 
   const onKey = (e: KeyboardEvent) => {
-    if (e.code === "Backquote" && !value) {
+    if (isTick(e) && !value) {
       e.preventDefault();
       setOpen(false);
     } else if (e.key === "ArrowUp") {

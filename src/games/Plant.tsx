@@ -9,7 +9,10 @@ const POT = (
 );
 
 const leaf = (x: number, y: number, flip: 1 | -1, s = 1) => (
-  <path d={`M${x} ${y}q${10 * flip * s} -2 ${12 * flip * s} -10q-10 0 -${12 * flip * s} 10z`} class="leaf" />
+  <path
+    d={`M${x} ${y}q${10 * flip * s} -2 ${12 * flip * s} -10q${-10 * flip * s} 0 ${-12 * flip * s} 10z`}
+    class="leaf"
+  />
 );
 
 const stem = (top: number) => <path d={`M32 44V${top}`} class="stem" />;
@@ -115,6 +118,64 @@ const DRAW: Record<Kind, (stage: number) => ComponentChildren> = {
       </>
     );
   },
+  rose: (s) => {
+    if (s === 0) return SEED;
+    const top = 44 - [0, 8, 16, 24, 28][s]!;
+    return (
+      <>
+        {stem(top)}
+        {leaf(32, 42, -1, 1)}
+        {s >= 2 && leaf(32, 36, 1, 1.1)}
+        {s === 3 && <ellipse cx="32" cy={top - 3} rx="3.6" ry="5" class="rosebud" />}
+        {s === 4 && (
+          <>
+            <circle cx="32" cy={top - 5} r="8" class="rosebloom" />
+            <path d={`M26 ${top - 5}a6 6 0 0 1 12 0a4 4 0 0 1 -8 0a2 2 0 0 1 4 0`} class="roseswirl" />
+          </>
+        )}
+      </>
+    );
+  },
+  pumpkin: (s) => {
+    if (s === 0) return SEED;
+    const r = [0, 4, 7, 10, 13][s]!;
+    return (
+      <>
+        <path d="M32 44q-14 -4 -22 -14M32 44q14 -4 22 -14" class="vine" />
+        {leaf(22, 40, -1, 1.1)}
+        {s >= 2 && leaf(42, 40, 1, 1.1)}
+        <ellipse
+          cx="32"
+          cy={44 - r * 0.9}
+          rx={r * 1.25}
+          ry={r * 0.95}
+          class={s === 4 ? "gourd ripe" : "gourd"}
+        />
+        {s >= 3 && <path d={`M32 ${44 - r * 1.8}v${r * 1.7}`} class="rib" />}
+        <path d={`M32 ${44 - r * 1.8}q1 -4 4 -5`} class="vine" />
+      </>
+    );
+  },
+  lavender: (s) => {
+    if (s === 0) return SEED;
+    const n = [0, 2, 3, 4, 5][s]!;
+    const h = [0, 8, 14, 20, 24][s]!;
+    return (
+      <>
+        {Array.from({ length: n }, (_, i) => {
+          const x = 32 + (i - (n - 1) / 2) * 5;
+          const top = 44 - h - (i % 2) * 3;
+          return (
+            <g key={i}>
+              <path d={`M32 44Q${x} ${44 - h / 2} ${x} ${top}`} class="stem" />
+              {s >= 3 && <ellipse cx={x} cy={top - 3} rx="1.9" ry="5" class="spike" />}
+              {s === 4 && <ellipse cx={x} cy={top - 5} rx="1.5" ry="3" class="spike hot" />}
+            </g>
+          );
+        })}
+      </>
+    );
+  },
 };
 
 export function PlantArt({
@@ -123,15 +184,23 @@ export function PlantArt({
   label,
   pot = true,
   delay = 0,
+  color = "",
 }: {
   kind: Kind;
   stage: number;
   label: string;
   pot?: boolean;
   delay?: number;
+  color?: string;
 }) {
   return (
-    <svg class={`plant s${stage}`} viewBox="0 0 64 64" role="img" aria-label={label}>
+    <svg
+      class={`plant s${stage}`}
+      viewBox="0 0 64 64"
+      role="img"
+      aria-label={label}
+      style={color ? { "--bloomc": color } : undefined}
+    >
       <g class="sway" style={{ animationDelay: `${-delay}s` }}>
         {(DRAW[kind] ?? DRAW.tulip)(Math.min(4, Math.max(0, stage)))}
       </g>

@@ -1,6 +1,7 @@
-import { Env, geo, json } from "./_lib";
+import { ZONES } from "./_zones";
+import { Env, geo, json, trustedCountry } from "./_lib";
 
-// Coordinates come from Cloudflare (the visitor's city), never from the client.
+// Coordinates come from Cloudflare (the visitor's city). If the browser time zone disagrees with it (a VPN), the zone wins.
 // The visitor's address is not passed on: Open-Meteo only sees our server and rounded coordinates.
 
 type Current = { temperature_2m: number; weather_code: number; is_day: number; wind_speed_10m: number };
@@ -13,9 +14,13 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, waitUntil }) =
   const lat = Number(cf.latitude);
   const lon = Number(cf.longitude);
   const known = Number.isFinite(lat) && Number.isFinite(lon) && !!cf.latitude;
-  const at = known
-    ? { lat: Math.round(lat * 10) / 10, lon: Math.round(lon * 10) / 10, city: geo(request).city }
-    : FALLBACK;
+  const tz = new URL(request.url).searchParams.get("tz") ?? "";
+  const zone = !trustedCountry(request, tz) ? ZONES[tz] : undefined;
+  const at = zone
+    ? { lat: zone[0], lon: zone[1], city: tz.split("/").pop()!.replace(/_/g, " ") }
+    : known
+      ? { lat: Math.round(lat * 10) / 10, lon: Math.round(lon * 10) / 10, city: geo(request).city }
+      : FALLBACK;
 
   const key = new Request(`https://weather.cache/${at.lat}/${at.lon}`);
   const cache = caches.default;

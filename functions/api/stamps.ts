@@ -1,6 +1,6 @@
 import { EGGS, isCountryStamp, isSeasonStamp, seasonStamp } from "../../shared/stamps";
 import { getUser, requireUser } from "./_blog";
-import { Env, geo, json, limit } from "./_lib";
+import { Env, json, limit, trustedCountry } from "./_lib";
 import { award } from "./_stamps";
 
 const DAY = 86_400_000;
@@ -10,12 +10,12 @@ const seasonOk = (code: string) => {
   return [now - DAY, now, now + DAY].some((t) => seasonStamp(new Date(t)) === code);
 };
 
-// Reading the passport also stamps the country the visitor is in right now.
+// Reading the passport also stamps the country the visitor is in right now, if the clock agrees with the IP.
 export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   const u = await getUser(request, env);
   if (!u) return json({ stamps: [] });
-  const country = `c:${geo(request).country}`;
-  if (isCountryStamp(country)) await award(env, u.id, [country]);
+  const where = trustedCountry(request, new URL(request.url).searchParams.get("tz"));
+  if (where && isCountryStamp(`c:${where}`)) await award(env, u.id, [`c:${where}`]);
   const { results } = await env.DB.prepare("SELECT code,created FROM stamps WHERE user_id=? ORDER BY created")
     .bind(u.id)
     .all<{ code: string; created: number }>();

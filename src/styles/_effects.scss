@@ -91,6 +91,10 @@ html.zoomed {
     backdrop-filter: none !important;
     animation-play-state: paused !important;
   }
+  // The garden is the thing people zoom into, so its small animations keep running.
+  .gscene * {
+    animation-play-state: running !important;
+  }
   .mark,
   .aurora {
     display: none;

@@ -89,8 +89,8 @@ function Focus({ pick, l, got, onClose }: { pick: Pick; l: L; got: boolean; onCl
           <Stamp look={look} id={`${pick.code}-big`} locked={!got} />
         </div>
         <figcaption>
-          <b>{look.title}</b>
-          <span>{look.hint || look.title}</span>
+          <b>{got ? look.title : t.locked}</b>
+          {got && <span>{look.hint || look.title}</span>}
           <small class={got ? "ok" : ""}>{got ? t.owned : t.notYet}</small>
         </figcaption>
       </figure>
@@ -127,7 +127,7 @@ function Passport({ l, onClose }: { l: L; onClose: () => void }) {
   const total = STAMPS.length;
   const got = STAMPS.filter((s) => have.has(s.id)).length;
 
-  const grid = (ids: string[], hide = false) =>
+  const grid = (ids: string[]) =>
     ids.length === 0 ? (
       <p class="pnone">{t.nothing}</p>
     ) : (
@@ -140,7 +140,7 @@ function Passport({ l, onClose }: { l: L; onClose: () => void }) {
               <button
                 type="button"
                 class="pcell"
-                aria-label={look.title}
+                aria-label={ok ? look.title : t.locked}
                 onClick={(e) =>
                   setPick({
                     code: id,
@@ -152,7 +152,7 @@ function Passport({ l, onClose }: { l: L; onClose: () => void }) {
               >
                 <Stamp look={look} id={id} locked={!ok} />
                 <b>{ok ? look.title : t.locked}</b>
-                {(!ok || hide) && look.hint && <small>{look.hint}</small>}
+                {ok && look.hint && <small>{look.hint}</small>}
               </button>
             </li>
           );

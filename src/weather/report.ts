@@ -1,5 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import type { Report } from "./prefs";
+import { timeZone } from "../lib/tz";
 
 const DEMO = Boolean(import.meta.env.VITE_DEMO || import.meta.env.VITE_BLOG_DEMO);
 const KEY = "snak-wx-report";
@@ -20,7 +21,7 @@ export function useReport(wanted: boolean) {
       // ignore broken cache
     }
     let live = true;
-    void fetch("/api/weather")
+    void fetch(`/api/weather?tz=${encodeURIComponent(timeZone())}`)
       .then((r) => (r.ok ? (r.json() as Promise<Report>) : null))
       .catch(() => null)
       .then((r) => {

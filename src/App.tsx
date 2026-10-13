@@ -7,7 +7,7 @@ import { Shell } from "./components/Shell";
 import { Hero } from "./components/Hero";
 import { Contacts } from "./components/Contacts";
 import { Stats } from "./components/Stats";
-import { GitHubActivity } from "./components/GitHubActivity";
+// import { GitHubActivity } from "./components/GitHubActivity";
 import { Projects } from "./components/projects/Projects";
 import { Timeline } from "./components/timeline/Timeline";
 import { BlogPreview } from "./components/BlogPreview";
@@ -34,7 +34,7 @@ export function App({ preview = false }: { preview?: boolean }) {
           <Hero l={l} />
           <Contacts l={l} />
           <Stats l={l} />
-          <GitHubActivity l={l} />
+          {/* <GitHubActivity l={l} /> */}
           <Projects l={l} />
           <BlogPreview l={l} />
           <VisitorMap l={l} />

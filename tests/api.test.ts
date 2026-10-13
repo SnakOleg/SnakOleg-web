@@ -179,8 +179,10 @@ test("the dashboard API refuses strangers", async () => {
   assert.equal((await call("/api/auth/me", { headers: admin() })).body.name, "Test");
 });
 
-test("live presence only accepts websocket upgrades", async () => {
-  assert.equal((await call("/api/live")).status, 426);
+test("live presence: a plain request only says whether the realtime Worker is up", async () => {
+  const res = await call("/api/live");
+  assert.equal(res.status, 200);
+  assert.equal(res.body.live, false, "no realtime Worker runs next to the tests");
 });
 
 test("passport stamps: only found eggs and the current season are accepted from the browser", async () => {
@@ -226,7 +228,8 @@ test("games: the word is checked on the server and the reaction test needs a rea
   assert.equal(state.day, day);
   assert.equal(state.streak, 0);
   assert.equal((await call("/api/game?kind=word&g=abc")).status, 400);
-  const miss = await call("/api/game?kind=word&g=ааааа&n=1");
+  assert.equal((await call("/api/game?kind=word&g=ыыыыы&n=1")).status, 422);
+  const miss = await call("/api/game?kind=word&g=абзац&n=1");
   assert.equal(miss.status, 200);
   assert.equal(miss.body.answer, undefined);
   const hit = await call(`/api/game?kind=word&g=${encodeURIComponent(answer)}&n=2`);
@@ -255,6 +258,17 @@ test("games: the word is checked on the server and the reaction test needs a rea
   assert.equal(slow.body.best, 200);
   const after = (await call("/api/game?kind=quick")).body;
   assert.equal(after.top[0].ms, 200);
+  assert.equal(after.week[0].ms, 200);
+  assert.equal(after.week[0].user_id, undefined, "ids stay on the server");
+  assert.equal(after.champion, null);
+  sql("UPDATE games SET day=day-1 WHERE kind='quickw'");
+  const next = (await call("/api/game?kind=quick")).body;
+  assert.equal(next.champion.ms, 200);
+  assert.equal(next.week.length, 0);
+  const champs = (await call("/api/stamps", { headers: visitor("7001") })).body.stamps.map(
+    (x: { code: string }) => x.code,
+  );
+  assert.ok(champs.includes("champion"));
 });
 
 test("bot status: only the owner can set it, presets and free text both work", async () => {
@@ -308,6 +322,22 @@ test("garden and time capsules: one plant a day, sealed text stays on the server
   );
   assert.equal((await send("/api/garden", "7004", { action: "plant", kind: "cactus" })).status, 201);
   assert.equal((await send("/api/garden", "7004", { action: "gift", target: "7001" })).status, 200);
+  assert.equal(
+    (await send("/api/garden", "7004", { action: "gift", target: "7001" })).status,
+    409,
+    "once a day",
+  );
+  assert.equal((await send("/api/garden", "7004", { action: "style", color: 2, deco: "gnome" })).status, 200);
+  assert.equal(
+    (await send("/api/garden", "7004", { action: "style", color: 99, deco: "gnome" })).status,
+    400,
+  );
+  const pond = await send("/api/garden", OWNER, { action: "plant", kind: "rose", loc: "pond", color: 1 });
+  assert.equal(pond.status, 201);
+  const atPond = (await call("/api/garden?loc=pond")).body;
+  assert.equal(atPond.plants.length, 1);
+  assert.equal(atPond.counts.pond, 1);
+  assert.equal((await call("/api/garden?loc=meadow", { headers: visitor("7004") })).body.giftsLeft, 4);
   assert.equal((await send("/api/garden", "7004", { action: "gift", target: "no-such" })).status, 404);
   assert.equal((await call("/api/garden")).body.plants.find((p: { id: string }) => p.id === "7001").gifts, 1);
 
@@ -331,6 +361,18 @@ test("garden and time capsules: one plant a day, sealed text stays on the server
   assert.ok(opened.body.capsule.opened);
   for (let i = 0; i < 3; i++) await seal("7004", { body: `Письмо ${i}`, opens: Date.now() + 3 * day });
   assert.equal((await seal("7004", { body: "Четвёртое", opens: Date.now() + 3 * day })).status, 409);
+  sql(
+    `INSERT INTO capsules(user_id,body,created,opens,opened) VALUES ${Array.from({ length: 9 }, (_, i) => `('7004','old ${i}',1,2,3)`).join(",")}`,
+  );
+  sql(`UPDATE capsules SET opened=1 WHERE user_id='7004'`);
+  const over = await seal("7004", { body: "Лишняя", opens: Date.now() + 3 * day });
+  assert.equal(over.status, 409);
+  assert.equal(over.body.error, "lifetime");
+  assert.equal(
+    (await call("/api/capsule", { headers: visitor("7004") })).body.mine.length,
+    12,
+    "three sealed and nine opened",
+  );
   const stamps = (await call("/api/stamps", { headers: visitor("7001") })).body.stamps.map(
     (x: { code: string }) => x.code,
   );
@@ -654,7 +696,7 @@ test("blog: posts are admin-only to write, drafts and scheduled posts stay priva
     [made.body.id],
   );
   assert.deepEqual(list.posts[0].tags, ["код"]);
-  assert.equal(list.posts[0].excerpt, "Привет\nТекст поста");
+  assert.equal(list.posts[0].excerpt, "Текст **поста**", "headings are dropped, inline Markdown stays");
   assert.equal((await call(`/api/blog/posts/${draft.body.id}`)).status, 404);
   assert.equal((await call(`/api/blog/posts/${later.body.id}`)).status, 404);
   assert.equal((await call(`/api/blog/posts/${made.body.id}`)).body.post.title, "Первый <b>пост</b>");
@@ -665,7 +707,7 @@ test("blog: posts are admin-only to write, drafts and scheduled posts stay priva
 
   const page = await call(`/blog/${made.body.id}`);
   assert.equal(page.status, 200);
-  assert.ok(String(page.body).includes('property="og:title" content="Первый <b>пост</b> - Snak / Oleg"'));
+  assert.ok(String(page.body).includes("<title>Первый &lt;b&gt;пост&lt;/b&gt; - Snak / Oleg</title>"));
   assert.equal((await call("/blog/9999")).status, 404);
   const rss = await call("/blog/rss.xml");
   assert.ok(String(rss.body).includes("<item>") && !String(rss.body).includes("Черновик"));
@@ -958,6 +1000,7 @@ test("blog: the owner posts and moderates from the page, replies remember who th
       headers: visitor(as),
       body: JSON.stringify({ post: 0, body: "Привет с открытки", ...data }),
     });
+  sql(`UPDATE comments SET created=created-${2 * 86_400_000} WHERE post_id=0`);
   const sent = await postcard("7001", { card: { icon: "sun" } });
   assert.equal(sent.status, 201);
   assert.equal(sent.body.comment.card.icon, "sun");
@@ -1007,4 +1050,27 @@ test("blog: the owner posts and moderates from the page, replies remember who th
   assert.equal((await post(OWNER, { action: "delete", id: made.body.id })).status, 200);
   assert.equal((await call(`/api/blog/posts/${made.body.id}`)).status, 404);
   await send("/api/admin/community", "POST", { action: "settings", value: settings });
+});
+
+test("the guestbook keeps three entries per person, replies do not count", async () => {
+  const post = (as: string, data: object) =>
+    call("/api/blog/comments", {
+      method: "POST",
+      headers: visitor(as),
+      body: JSON.stringify({ post: 0, ...data }),
+    });
+  assert.equal((await post(OWNER, { body: "Запись 0" })).status, 201);
+  const soon = await post(OWNER, { body: "Ещё одна сразу" });
+  assert.equal(soon.status, 429);
+  assert.equal(soon.body.error, "guestbook_day");
+  for (let i = 1; i < 3; i++) {
+    sql(`UPDATE comments SET created=created-${2 * 86_400_000} WHERE post_id=0 AND user_id='${OWNER}'`);
+    assert.equal((await post(OWNER, { body: `Запись ${i}` })).status, 201);
+  }
+  sql(`UPDATE comments SET created=created-${2 * 86_400_000} WHERE post_id=0 AND user_id='${OWNER}'`);
+  const extra = await post(OWNER, { body: "Четвёртая" });
+  assert.equal(extra.status, 409);
+  assert.equal(extra.body.error, "guestbook");
+  const first = (await call("/api/blog/comments?post=0")).body.comments[0];
+  assert.equal((await post(OWNER, { body: "Ответ", parent: first.id })).status, 201);
 });

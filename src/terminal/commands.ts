@@ -55,8 +55,6 @@ const rainLine = (n: number) =>
         ),
   ).join("");
 
-const pick = <T>(a: T[]) => a[Math.floor(Math.random() * a.length)];
-
 async function rm(c: Ctx) {
   const t = text(c.l);
   await c.later(
@@ -79,6 +77,7 @@ async function hack(c: Ctx) {
     c.print({ t: `[${"#".repeat(p / 5).padEnd(20, ".")}] ${p}%`, c: "mx" });
     await new Promise((r) => setTimeout(r, 280));
   }
+  if (Math.random() < 0.25) return c.print({ t: t.hackFail, c: "err" });
   c.print({ t: t.hackDone, c: "ok" });
   found("hacker");
 }
@@ -108,7 +107,7 @@ const REGISTRY: Record<string, Run> = {
     const t = text(c.l);
     const all = a.some((x) => /^-[a-z]*a/.test(x));
     const target = a.find((x) => !x.startsWith("-"));
-    const path = resolve(c.cwd, target);
+    const path = resolve(c.cwd, target ?? ".");
     const e = stat(path);
     if (!e) return c.print({ t: t.noFile(target ?? path), c: "err" });
     if (!e.dir) return c.print(target!);
@@ -210,6 +209,43 @@ const REGISTRY: Record<string, Run> = {
       "            Stack: TypeScript, Preact, Vite",
       `            Language: ${c.l}`,
     ]),
+  fastfetch: (_a, c) => {
+    const ua = navigator.userAgent;
+    const browser = /Edg\//.test(ua)
+      ? "Edge"
+      : /Firefox\//.test(ua)
+        ? "Firefox"
+        : /Chrome\//.test(ua)
+          ? "Chrome"
+          : /Safari\//.test(ua)
+            ? "Safari"
+            : "?";
+    const os = /Windows/.test(ua)
+      ? "Windows"
+      : /Android/.test(ua)
+        ? "Android"
+        : /iPhone|iPad/.test(ua)
+          ? "iOS"
+          : /Mac OS/.test(ua)
+            ? "macOS"
+            : /Linux/.test(ua)
+              ? "Linux"
+              : "?";
+    const mem = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
+    const logo = ["   ____", "  / __/", " _\\ \\", "/___/"];
+    const info = [
+      "guest@snak",
+      "----------",
+      `OS: ${os}`,
+      `Browser: ${browser}`,
+      `Resolution: ${screen.width}x${screen.height} @${devicePixelRatio}x`,
+      `CPU: ${navigator.hardwareConcurrency || "?"} threads`,
+      ...(mem ? [`Memory: ${mem} GiB (or more)`] : []),
+      `Locale: ${navigator.language}`,
+      `Uptime: ${Math.round(performance.now() / 1000)}s on this page`,
+    ];
+    c.print(info.map((x, i) => `${(logo[i] ?? "").padEnd(10)} ${x}`));
+  },
   rm: (a, c) => (a.includes("-rf") || a.includes("-fr") ? rm(c) : c.print("rm: missing operand")),
   hack: (_a, c) => hack(c),
   matrix: (_a, c) => matrix(c),
@@ -218,10 +254,6 @@ const REGISTRY: Record<string, Run> = {
     found("teapot");
   },
   vim: (_a, c) => c.vim(),
-  fortune: (_a, c) => {
-    c.print(pick(text(c.l).fortunes));
-    found("fortune");
-  },
   cowsay: (a, c) => {
     if (!a.length) return c.print(text(c.l).cowAsk);
     const msg = a.join(" ").slice(0, 40);

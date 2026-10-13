@@ -59,17 +59,36 @@ export function plainText(md: string) {
 
 /** Comments with this post id belong to the guestbook, not to a post. */
 export const GUESTBOOK = 0;
+export const GUESTBOOK_MAX = 3;
+export const GUESTBOOK_GAP_MS = 20 * 3_600_000;
 export const MAX_PINNED = 3;
 
-export function excerptOf(md: string, max = 220) {
-  const t = md
-    .replace(/```[\s\S]*?```/g, " ")
+// A short Markdown teaser: paragraphs and lists with inline formatting, no headings, code blocks, images or tables.
+export function excerptOf(md: string, max = 260) {
+  const lines = md
+    .replace(/```[\s\S]*?```/g, "\n")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
     .split("\n")
-    .map(plainText)
-    .filter(Boolean)
-    .join("\n");
-  if (t.length <= max) return t;
-  return t.slice(0, max).replace(/\s+\S*$/, "") + "…";
+    .map((x) =>
+      x
+        .replace(/^>\s*\[![A-Za-z]+\]\s*/, "")
+        .replace(/^>\s?/, "")
+        .trimEnd(),
+    )
+    .filter((x) => x.trim() && !/^\s*(#{1,6}\s|\||-{3,}|\*{3,})/.test(x));
+  const out: string[] = [];
+  let size = 0;
+  for (const line of lines) {
+    if (size + line.length > max) {
+      const room = max - size;
+      if (room > 40) out.push(line.slice(0, room).replace(/\s+\S*$/, "") + "…");
+      else if (out.length) out[out.length - 1] += "…";
+      break;
+    }
+    out.push(line);
+    size += line.length;
+  }
+  return out.join("\n");
 }
 
 export const readMinutes = (md: string) =>

@@ -66,18 +66,16 @@
       font-size: 0.78rem;
       color: var(--mut);
     }
-    b {
+    a > b {
       font: 600 1.05rem/1.3 var(--f-head);
     }
-    span {
-      white-space: pre-line;
+    .teaser {
       flex: 1;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
+      max-height: 4.4em;
       overflow: hidden;
       color: var(--mut);
       font-size: 0.92rem;
+      mask-image: linear-gradient(#000 60%, transparent);
     }
     small {
       display: flex;
@@ -100,5 +98,39 @@
 @media (max-width: 48rem) {
   .bp .bpl {
     grid-template-columns: 1fr;
+  }
+}
+
+.teaser {
+  p,
+  ul,
+  ol {
+    margin: 0 0 0.3rem;
+  }
+  ul,
+  ol {
+    padding-left: 1.3rem;
+  }
+  b {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  code {
+    padding: 0 0.3em;
+    font-size: 0.88em;
+    background: color-mix(in srgb, var(--mut) 15%, transparent);
+    border-radius: 0.3em;
+  }
+  mark {
+    color: inherit;
+    background: color-mix(in srgb, var(--acc) 25%, transparent);
+  }
+  u {
+    text-decoration-color: var(--acc);
+  }
+  .tspoil {
+    color: transparent;
+    background: color-mix(in srgb, var(--mut) 35%, transparent);
+    border-radius: 0.25em;
   }
 }

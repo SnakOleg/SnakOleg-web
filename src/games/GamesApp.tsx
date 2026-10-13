@@ -4,7 +4,7 @@ import type { L } from "../lib/i18n";
 import { GAMES, gameHref } from "./client";
 import type { GameTab } from "./client";
 import { Capsule } from "./Capsule";
-import { Garden } from "./Garden";
+import { Garden } from "./garden/Garden";
 import { Quick } from "./Quick";
 import { gameStrings } from "./strings";
 import { Word } from "./Word";

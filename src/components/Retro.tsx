@@ -154,9 +154,11 @@ export function RetroFooter({ l }: { l: L }) {
   return (
     <section class="r-foot" aria-label="2003">
       <div class="r-tape" aria-hidden="true">
-        <span>
-          🚧 {t.under} 🚧 {t.under} 🚧 {t.under} 🚧
-        </span>
+        <div class="r-track">
+          {[0, 1].map((k) => (
+            <span key={k}>{Array.from({ length: 4 }, () => `🚧 ${t.under} `).join("")}</span>
+          ))}
+        </div>
       </div>
       <p class="r-count">
         {u.retroVisitor}

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
-import { CAPSULE_MAX } from "../../shared/garden";
+import { CAPSULE_BAY, CAPSULE_MAX } from "../../shared/garden";
 import { api, currentMe, loginUrl } from "../blog/api";
 import { toast } from "../blog/ui";
 import { found } from "../stamps/client";
@@ -8,10 +8,12 @@ import { gameStrings } from "./strings";
 
 type Mine = { id: number; created: number; opens: number; opened: number | null; body?: string };
 type Pod = { opens: number; name: string };
-type Phase = "idle" | "letters" | "travel" | "arrive";
+type Phase = "idle" | "pack" | "seal" | "travel" | "arrive";
 
 const DAY = 86_400_000;
-const PODS = 24;
+const BAY = CAPSULE_BAY;
+const ROW = 8;
+const MIN_PODS = 24;
 const HOLD_MS = 650;
 const PRESETS = [
   ["week", 7],
@@ -41,6 +43,20 @@ const shortDate = (ts: number, l: L) =>
     month: "2-digit",
     year: "2-digit",
   });
+
+function Shell() {
+  return (
+    <svg viewBox="0 0 48 96" class="shell">
+      <path d="M8 52v22a16 16 0 0 0 32 0V52z" class="b" />
+      <rect x="12" y="50" width="24" height="6" rx="3" class="mouth" />
+      <g class="lid">
+        <path d="M8 46V22a16 16 0 0 1 32 0v24z" class="a" />
+        <path d="M14 20q1-7 7-9" class="gloss" />
+      </g>
+      <path d="M8 49h32" class="band" />
+    </svg>
+  );
+}
 
 function Tube({ full }: { full: boolean }) {
   return (
@@ -73,9 +89,10 @@ export function Capsule({ l }: { l: L }) {
   const [busy, setBusy] = useState(false);
   const [holding, setHolding] = useState(false);
   const [target, setTarget] = useState(-1);
+  const [landed, setLanded] = useState<Pod | null>(null);
   const bay = useRef<HTMLDivElement>(null);
   const room = useRef<HTMLDivElement>(null);
-  const consoleEl = useRef<HTMLElement>(null);
+  const packEl = useRef<HTMLDivElement>(null);
   const flight = useRef<HTMLDivElement>(null);
   const timers = useRef<number[]>([]);
   const hold = useRef(0);
@@ -111,29 +128,40 @@ export function Capsule({ l }: { l: L }) {
   const wait = (ms: number) => new Promise<void>((done) => timers.current.push(window.setTimeout(done, ms)));
 
   const travel = async (to: number) => {
-    const rb = bay.current?.getBoundingClientRect();
-    const rc = consoleEl.current?.getBoundingClientRect();
-    const rp = room.current?.querySelectorAll<HTMLElement>(".pod")[to]?.getBoundingClientRect();
+    const box = bay.current;
+    const from = packEl.current?.querySelector(".capsule")?.getBoundingClientRect();
+    const pod = room.current?.querySelectorAll<HTMLElement>(".pod .tube")[to]?.getBoundingClientRect();
     const el = flight.current;
-    if (!rb || !rc || !rp || !el) return;
-    const sx = rc.left + rc.width / 2 - rb.left;
-    const sy = rc.top + rc.height / 2 - rb.top;
-    const ex = rp.left + rp.width / 2 - rb.left;
-    const ey = rp.top + rp.height / 2 - rb.top;
-    const hover = Math.min(sy, ey) - 40;
-    await el.animate(
+    if (!box || !from || !pod || !el) return;
+    const rb = box.getBoundingClientRect();
+    const at = (r: DOMRect) => ({
+      x: r.left + r.width / 2 - rb.left - box.clientLeft,
+      y: r.top + r.height / 2 - rb.top - box.clientTop,
+    });
+    const a = at(from);
+    const z = at(pod);
+    const end = Math.max(0.2, Math.min(0.5, (pod.width * 0.45) / from.width));
+    const lift = Math.min(a.y, z.y) - 70;
+    const pose = (x: number, y: number, scale: number, turn: number) =>
+      `translate(${Math.round(x)}px, ${Math.round(y)}px) rotate(${turn}deg) scale(${scale})`;
+    room.current?.querySelectorAll(".pod")[to]?.scrollIntoView({ block: "center", behavior: "smooth" });
+    const run = el.animate(
       [
-        { transform: `translate(${sx}px, ${sy}px) rotate(90deg) scale(0.8)`, opacity: 0 },
-        { transform: `translate(${sx}px, ${sy - 40}px) rotate(90deg) scale(1)`, opacity: 1, offset: 0.2 },
+        { transform: pose(a.x, a.y, 1, 0), opacity: 1, easing: "cubic-bezier(0.3, 0, 0.2, 1)" },
+        { transform: pose(a.x, a.y - 36, 1.06, -4), opacity: 1, offset: 0.22, easing: "ease-in-out" },
         {
-          transform: `translate(${(sx + ex) / 2}px, ${hover}px) rotate(0deg) scale(1)`,
+          transform: pose((a.x + z.x) / 2, lift, 0.8, 4),
           opacity: 1,
-          offset: 0.6,
+          offset: 0.62,
+          easing: "cubic-bezier(0.5, 0, 0.7, 0.4)",
         },
-        { transform: `translate(${ex}px, ${ey}px) rotate(0deg) scale(0.55)`, opacity: 0.9 },
+        { transform: pose(z.x, z.y, end, 0), opacity: 1, offset: 0.92 },
+        { transform: pose(z.x, z.y, end * 0.9, 0), opacity: 0 },
       ],
-      { duration: 1500, easing: "cubic-bezier(0.55, 0, 0.35, 1)", fill: "forwards" },
-    ).finished;
+      { duration: 1800, fill: "forwards" },
+    );
+    await run.finished;
+    run.cancel();
   };
 
   const submit = async () => {
@@ -143,22 +171,36 @@ export function Capsule({ l }: { l: L }) {
     setBusy(false);
     if (!r.ok)
       return void toast(
-        r.data.error === "limit" ? t.limit : r.data.error === "bad_date" ? t.badDate : t.offline,
+        r.data.error === "limit"
+          ? t.limit
+          : r.data.error === "lifetime"
+            ? t.lifetime
+            : r.data.error === "full"
+              ? t.bayFull
+              : r.data.error === "bad_date"
+                ? t.badDate
+                : t.offline,
       );
     r.data.added?.forEach(found);
-    const to = Math.min(vault.length, PODS - 1);
+    const slot = vault.filter((p) => p.opens <= opens).length;
+    const to = Math.min(slot, shown - 1);
+    const mineName = currentMe()?.user?.name ?? "";
     setFlying(text);
     setText("");
     setDate("");
     setTarget(to);
-    setPhase("letters");
-    await wait(1500);
+    setPhase("pack");
+    await wait(1800);
+    setPhase("seal");
+    await wait(1000);
     setPhase("travel");
     await travel(to);
+    if (slot < BAY) setLanded({ opens, name: mineName });
     setPhase("arrive");
-    await wait(1400);
+    await wait(1600);
     setPhase("idle");
     setTarget(-1);
+    setLanded(null);
     await load();
   };
 
@@ -183,8 +225,16 @@ export function Capsule({ l }: { l: L }) {
 
   const now = Date.now();
   const mineOpens = new Set(mine.filter((c) => !c.opened).map((c) => c.opens));
-  const pods = Array.from({ length: PODS }, (_, i) => vault[i] ?? null);
   const used = Math.max(total, vault.length);
+  const shown = Math.min(BAY, Math.max(MIN_PODS, Math.ceil((vault.length + 1) / ROW) * ROW));
+  const list = landed
+    ? [
+        ...vault.filter((p) => p.opens <= landed.opens),
+        landed,
+        ...vault.filter((p) => p.opens > landed.opens),
+      ]
+    : vault;
+  const pods = Array.from({ length: shown }, (_, i) => list[i] ?? null);
 
   return (
     <div class="bay" ref={bay}>
@@ -205,7 +255,7 @@ export function Capsule({ l }: { l: L }) {
           <li>
             {t.bayPods}{" "}
             <b>
-              {used}/{PODS}
+              {used}/{BAY}
             </b>
           </li>
         </ul>
@@ -222,7 +272,7 @@ export function Capsule({ l }: { l: L }) {
                 class={`pod${p ? " full" : ""}${own ? " mine" : ""}${ready ? " ready" : ""}${target === i && phase === "arrive" ? " arrive" : ""}`}
                 title={p ? `${p.name} · ${shortDate(p.opens, l)}` : t.free}
               >
-                <Tube full={!!p || (target === i && phase === "arrive")} />
+                <Tube full={!!p} />
                 <span class="steam" aria-hidden="true" />
                 <div class="podplate">
                   <small>{t.podLabel(i + 1)}</small>
@@ -234,23 +284,24 @@ export function Capsule({ l }: { l: L }) {
             );
           })}
         </ul>
-        <div class="flycap" ref={flight} aria-hidden="true">
-          <svg viewBox="0 0 48 96">
-            <path d="M8 44V22a16 16 0 0 1 32 0v22z" class="a" />
-            <path d="M8 52v22a16 16 0 0 0 32 0V52z" class="b" />
-            <path d="M6 48h36" class="band" />
-          </svg>
-        </div>
+      </div>
+
+      <div class="flycap" ref={flight} aria-hidden="true">
+        <Shell />
       </div>
 
       <div class="baydeck">
-        <section class="console" ref={consoleEl}>
+        <section class="console">
           <h2>
             <i class="led ok" />
             {t.bayLog}
           </h2>
-          {phase === "letters" && (
-            <div class="cletters" aria-hidden="true">
+          {(phase === "pack" || phase === "seal") && (
+            <div class={`pack ${phase === "pack" ? "open" : "closed"}`} ref={packEl} aria-hidden="true">
+              <div class="capsule">
+                <Shell />
+                <i class="ring" />
+              </div>
               {letters.map((x, i) => (
                 <span
                   key={i}

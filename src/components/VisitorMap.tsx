@@ -8,7 +8,6 @@ type Data = { visits: Record<string, number>; cards: Record<string, number> };
 const T = {
   ru: {
     title: "Откуда заходят",
-    hint: "Чем ярче страна, тем больше визитов. Контуром отмечены страны с открытками.",
     visits: "визитов",
     cards: "открыток",
     countries: (n: number) => `${n} стран`,
@@ -17,7 +16,6 @@ const T = {
   },
   en: {
     title: "Where visitors come from",
-    hint: "The brighter the country, the more visits. Outlined countries have sent postcards.",
     visits: "visits",
     cards: "postcards",
     countries: (n: number) => `${n} countries`,
@@ -25,6 +23,10 @@ const T = {
     empty: "The map comes alive with the first visits.",
   },
 };
+
+// Antarctica is dropped and the polar sea cropped, so the land fills more of the frame.
+const TOP = 20;
+const BOTTOM = 442;
 
 const regionName = (cc: string, l: L) => {
   try {
@@ -61,10 +63,10 @@ export function VisitorMap({ l }: { l: L }) {
         </h2>
         <span class="vmn">{t.countries(lit)}</span>
       </div>
-      <p class="vmhint">{lit === 0 ? t.empty : t.hint}</p>
+      {lit === 0 && <p class="vmhint">{t.empty}</p>}
       <div class="vmwrap">
         <svg
-          viewBox={`0 0 ${world.w} ${world.h}`}
+          viewBox={`0 ${TOP} ${world.w} ${BOTTOM - TOP}`}
           role="img"
           aria-label={t.title}
           onPointerLeave={() => setTip(null)}

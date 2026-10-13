@@ -7,14 +7,10 @@ export const profile = {
   avatar: "", // e.g. "/avatar.webp" (file in /public). Empty = placeholder cat
   theme: { hue: 255, mode: "auto" as "auto" | "light" | "dark", presets: true },
   hi: t("Привет, я", "Hi, I'm"),
-  roles: [
-    t("Full-Stack разработчик", "Full-Stack developer"),
-    t("TypeScript и Preact", "TypeScript & Preact"),
-    t("Автоматизирую рутину", "Automating the boring stuff"),
-  ],
+  roles: [t("Full-Stack разработчик", "Full-Stack developer")],
   about: t(
-    "Я Олег, в интернете чаще известен как Снак. Делаю интерфейсы и всё, что за ними: люблю разбираться в архитектуре, автоматизировать рутину и превращать идею в работающий продукт.",
-    "I'm Oleg, better known online as Snak. I build interfaces and everything behind them: I like digging into architecture, automating routine work and turning an idea into a working product.",
+    "Меня зовут Олег, начинающий фулстакер. Люблю разбираться в деталях, а ещё, помимо программирования, увлекаюсь дизайном и монтажом.",
+    "I'm Oleg, a beginner full-stack developer. I like digging into details, and besides programming I'm into design and video editing.",
   ),
   waka: {
     url: "https://wakatime.com/@snakoleg",
@@ -40,10 +36,9 @@ export const profile = {
   soft: [
     t("Ответственность", "Responsibility"),
     t("Координация команды", "Team coordination"),
-    t("Решение проблем", "Problem solving"),
     t("Самообучение", "Self-learning"),
-    t("Автоматизация рутины", "Routine automation"),
-    t("Внимание к архитектуре", "Architecture mindset"),
-    t("Работа с заказчиками", "Working with clients"),
+    t("Работа с B2B-клиентами", "Working with B2B clients"),
+    t("Внимательность", "Attention to detail"),
+    t("ИИ как инструмент", "AI as a tool"),
   ],
 };

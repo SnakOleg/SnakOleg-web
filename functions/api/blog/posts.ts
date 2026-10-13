@@ -1,3 +1,4 @@
+import { excerptOf } from "../../../shared/blog";
 import { getUser } from "../_blog";
 import { Env, json } from "../_lib";
 import { likeEscape, reactionsFor } from "./_shared";
@@ -6,7 +7,7 @@ const PAGE = 8;
 type Row = {
   id: number;
   title: string;
-  excerpt: string;
+  body: string;
   tags: string;
   cover: string;
   pinned: number;
@@ -34,7 +35,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     where.push(`(title LIKE ?${args.length} ESCAPE '\\' OR body LIKE ?${args.length} ESCAPE '\\')`);
   }
   const cursor = before ? ` AND pub<${before}` : "";
-  const base = `SELECT id,title,excerpt,tags,cover,pinned,pub,views,
+  const base = `SELECT id,title,body,tags,cover,pinned,pub,views,
     (SELECT COUNT(*) FROM comments c WHERE c.post_id=posts.id AND c.status IN ('visible','flagged')) cc
     FROM posts WHERE ${where.join(" AND ")}`;
 
@@ -71,7 +72,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
       posts: rows.map((r) => ({
         id: r.id,
         title: r.title,
-        excerpt: r.excerpt,
+        excerpt: excerptOf(r.body),
         tags: JSON.parse(r.tags),
         cover: r.cover,
         pinned: !!r.pinned,

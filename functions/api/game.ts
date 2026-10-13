@@ -6,8 +6,10 @@ import {
   normalize,
   score,
   validGuess,
+  weekNumber,
   wordOf,
 } from "../../shared/words";
+import { KNOWN } from "../../shared/dictionary";
 import { getUser, requireUser } from "./_blog";
 import { Env, geo, json, limit } from "./_lib";
 import { award } from "./_stamps";
@@ -45,6 +47,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     if (!(await limit(env, `gw:${geo(request).ip}`, 240, 3600))) return json({ error: "too_many" }, 429);
     const g = normalize(guess);
     if (!validGuess(g)) return json({ error: "invalid" }, 400);
+    if (!KNOWN.has(g)) return json({ error: "unknown" }, 422);
     const answer = wordOf(day);
     const tries = Math.min(WORD_TRIES, Math.max(1, Math.floor(Number(q.get("n")) || 1)));
     const p = score(g, answer);
@@ -54,15 +57,41 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
 
   if (kind === "quick") {
     const u = await getUser(request, env);
-    const { results } = await env.DB.prepare(
-      "SELECT g.score ms, u.name, u.picture FROM games g JOIN users u ON u.id=g.user_id WHERE g.kind='quick' ORDER BY g.score LIMIT 10",
-    ).all<{ ms: number; name: string; picture: string }>();
-    const mine = u
-      ? await env.DB.prepare("SELECT score FROM games WHERE user_id=? AND kind='quick'")
-          .bind(u.id)
-          .first<{ score: number }>()
-      : null;
-    return json({ t: Date.now(), top: results, mine: mine?.score ?? null });
+    const week = weekNumber();
+    const board = (w: number, n: number) =>
+      env.DB.prepare(
+        "SELECT g.score ms, u.name, u.picture, g.user_id FROM games g JOIN users u ON u.id=g.user_id WHERE g.kind='quickw' AND g.day=? ORDER BY g.score, g.created LIMIT ?",
+      )
+        .bind(w, n)
+        .all<{ ms: number; name: string; picture: string; user_id: string }>();
+    const [all, now, last, mine] = await Promise.all([
+      env.DB.prepare(
+        "SELECT g.score ms, u.name, u.picture FROM games g JOIN users u ON u.id=g.user_id WHERE g.kind='quick' ORDER BY g.score LIMIT 10",
+      ).all<{ ms: number; name: string; picture: string }>(),
+      board(week, 5),
+      board(week - 1, 1),
+      u
+        ? env.DB.prepare("SELECT score FROM games WHERE user_id=? AND kind='quick'")
+            .bind(u.id)
+            .first<{ score: number }>()
+        : null,
+    ]);
+    // Last week's winner gets the champion stamp the first time anyone looks at the board this week.
+    const champ = last.results[0];
+    if (champ && (await limit(env, `champ:${week}`, 1, 8 * 86400)))
+      await award(env, champ.user_id, ["champion"]);
+    const strip = ({ ms, name, picture }: { ms: number; name: string; picture: string }) => ({
+      ms,
+      name,
+      picture,
+    });
+    return json({
+      t: Date.now(),
+      top: all.results,
+      week: now.results.map(strip),
+      champion: champ ? strip(champ) : null,
+      mine: mine?.score ?? null,
+    });
   }
 
   return json({ error: "invalid" }, 400);
@@ -102,11 +131,12 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       age > 120_000
     )
       return json({ error: "invalid" }, 400);
-    await env.DB.prepare(
-      "INSERT INTO games(user_id,kind,day,score,created) VALUES (?,?,0,?,?) ON CONFLICT(user_id,kind,day) DO UPDATE SET score=MIN(score,excluded.score)",
-    )
-      .bind(u.id, "quick", ms, Date.now())
-      .run();
+    const upsert =
+      "INSERT INTO games(user_id,kind,day,score,created) VALUES (?,?,?,?,?) ON CONFLICT(user_id,kind,day) DO UPDATE SET score=MIN(score,excluded.score)";
+    await env.DB.batch([
+      env.DB.prepare(upsert).bind(u.id, "quick", 0, ms, Date.now()),
+      env.DB.prepare(upsert).bind(u.id, "quickw", weekNumber(), ms, Date.now()),
+    ]);
     const codes = ms < QUICK_STAMP ? ["quick"] : [];
     await award(env, u.id, codes);
     const best = await env.DB.prepare("SELECT score FROM games WHERE user_id=? AND kind='quick'")

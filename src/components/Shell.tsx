@@ -1,6 +1,5 @@
 import { useRef, useState } from "preact/hooks";
 import type { ComponentChildren } from "preact";
-import { site } from "../config";
 import { flipMode, useTheme } from "../hooks/useTheme";
 import type { Theme } from "../hooks/useTheme";
 import { useLang } from "../hooks/useLang";
@@ -8,8 +7,8 @@ import { useRetro } from "../hooks/useRetro";
 import { useShortcuts } from "../hooks/useShortcuts";
 import { useZoomGuard } from "../hooks/useZoomGuard";
 import { useTrail } from "../hooks/useTrail";
-import { useAwayTitle } from "../hooks/useAwayTitle";
 import type { L } from "../lib/i18n";
+import { EventBanner } from "./EventBanner";
 import { Announcements } from "./Announcements";
 import { Background } from "./Background";
 import { Customizer } from "./Customizer";
@@ -56,7 +55,6 @@ export function Shell({
   };
   const kind = resolve(wx, report).plan?.kind;
   useEggs(page, kind === "rain" || kind === "downpour" || kind === "storm");
-  useAwayTitle(site.ui[l].away);
   useShortcuts({
     lang: () => (found("hotkeys"), setL((x) => (x === "ru" ? "en" : "ru"))),
     theme: () => (found("hotkeys"), setTh(flipMode(th))),
@@ -67,11 +65,9 @@ export function Shell({
       {retro && <RetroDial l={l} />}
       {retro && <RetroBar l={l} onExit={() => setRetro(false)} />}
       <Announcements l={l} preview={preview} />
+      {!preview && <EventBanner l={l} />}
       <Background />
       {!preview && <Weather prefs={wx} report={report} />}
-      <a class="skip" href="#main">
-        {site.ui[l].skip}
-      </a>
       <main id="top">
         <Nav page={page} l={l} setL={setL} open={open} setOpen={setOpen} gearRef={gearRef} />
         {children({ l, retro, th })}

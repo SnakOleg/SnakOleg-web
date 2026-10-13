@@ -79,6 +79,7 @@ export function Word({ l }: { l: L }) {
       `/api/game?kind=word&g=${encodeURIComponent(typed.current)}&n=${rows.length + 1}`,
     );
     setBusy(false);
+    if (r.status === 422) return bad(t.unknown);
     if (!r.ok) return bad(t.offline);
     const next = [...rows, { w: typed.current, p: r.data.p }];
     const won = r.data.p === "g".repeat(WORD_LEN);

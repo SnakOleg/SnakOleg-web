@@ -2,8 +2,6 @@
 export const seo = {
   url: "https://snakoleg.pages.dev",
   title: "SnakOleg - FullStack Developer",
-  description:
-    "Снак (Олег), Full-Stack разработчик. Сайты и интерфейсы, API, Discord-боты. Проекты, активность на GitHub и навыки.",
   image: "/og.jpg",
   person: {
     name: "Oleg",

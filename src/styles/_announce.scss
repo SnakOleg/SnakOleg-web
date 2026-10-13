@@ -173,3 +173,59 @@
     transform: translateY(0.6rem) scale(0.96);
   }
 }
+
+.evb {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  z-index: 40;
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+  width: min(36rem, calc(100vw - 2rem));
+  padding: 0.6rem 0.7rem 0.6rem 0.9rem;
+  color: var(--ink);
+  background: var(--surf);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  box-shadow: 0 12px 30px rgb(0 0 0 / 0.2);
+  translate: -50% 0;
+  animation: evb-in 0.5s 1.5s ease-out both;
+
+  .evi {
+    font-size: 1.5rem;
+  }
+  p {
+    flex: 1;
+    margin: 0;
+    font-size: 0.88rem;
+  }
+  a {
+    color: var(--acc);
+    font-weight: 600;
+    font-size: 0.88rem;
+    white-space: nowrap;
+  }
+  button {
+    display: grid;
+    place-items: center;
+    width: 1.8rem;
+    height: 1.8rem;
+    color: var(--mut);
+    background: none;
+    border: 0;
+    border-radius: 50%;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--ink);
+      background: color-mix(in srgb, var(--mut) 15%, transparent);
+    }
+  }
+}
+@keyframes evb-in {
+  from {
+    opacity: 0;
+    translate: -50% 1rem;
+  }
+}

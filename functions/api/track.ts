@@ -1,4 +1,4 @@
-import { Env, geo, localDay, localHour, sha256, shiftDay } from "./_lib";
+import { Env, geo, localDay, localHour, sha256, shiftDay, trustedCountry } from "./_lib";
 
 const BOT = /bot|crawl|spider|slurp|headless|preview|lighthouse|monitor/i;
 const LINK = /^[a-z0-9][a-z0-9.\-_~:/@%+#?=&]*$/;
@@ -21,7 +21,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const sameSite = origin ? origin === self.origin : request.headers.get("Sec-Fetch-Site") === "same-origin";
   if (!ua || BOT.test(ua) || !sameSite) return none();
 
-  let body: { t?: string; p?: string; r?: string; l?: string; n?: string };
+  let body: { t?: string; p?: string; r?: string; l?: string; n?: string; z?: string };
   try {
     const text = await request.text();
     if (text.length > 1000) return none();
@@ -63,7 +63,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       : /mobi|android|iphone/i.test(ua)
         ? "mobile"
         : "desktop";
-    const country = String((request.cf as { country?: string } | undefined)?.country ?? "??");
+    const country = trustedCountry(request, body.z) ?? "??";
 
     const batch = [
       count("views", ""),

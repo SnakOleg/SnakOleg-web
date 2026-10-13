@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
+import { timeZone } from "../lib/tz";
 import { COMMENT_MAX, EDIT_WINDOW_MS } from "../../shared/blog";
 import { CARD_ICONS, CARD_MAX } from "../../shared/cards";
 import { Ico } from "../components/ui/Icon";
@@ -220,10 +221,9 @@ function Item({ c, l, canReply, replyName, line, onReply, onPatch, onReload, onB
               </button>
             )}
             {liked && (
-              <span class="byowner" title={b.byAuthor}>
-                <img src={site.avatar || avatarCat} alt="" width="16" height="16" />
-                {c.byOwner!.join(" ")}
-                <small>{b.byAuthor}</small>
+              <span class="byowner" title={`${b.byAuthor}: ${c.byOwner!.join(" ")}`}>
+                <img src={site.avatar || avatarCat} alt={b.byAuthor} width="20" height="20" />
+                <i>{c.byOwner![0]}</i>
               </span>
             )}
           </footer>
@@ -341,7 +341,7 @@ function Composer({
       post,
       body: text,
       parent: to?.id,
-      ...(icon ? { card: { icon } } : {}),
+      ...(icon ? { card: { icon }, tz: timeZone() } : {}),
     });
     setBusy(false);
     if (r.ok) {

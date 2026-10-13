@@ -1,6 +1,15 @@
 // In-memory copy of the blog API, used by the preview build (VITE_BLOG_DEMO) so the blog can be tried without a server.
-import { COMMENT_MAX, EMOJI, MAX_REACTIONS_PER_TARGET, cleanText, excerptOf } from "../../shared/blog";
+import {
+  COMMENT_MAX,
+  EMOJI,
+  GUESTBOOK,
+  GUESTBOOK_MAX,
+  MAX_REACTIONS_PER_TARGET,
+  cleanText,
+  excerptOf,
+} from "../../shared/blog";
 import { isSpam, scoreComment } from "../../shared/spam";
+import { KNOWN } from "../../shared/dictionary";
 import { WORD_TRIES, dayNumber, normalize, score, validGuess, wordOf } from "../../shared/words";
 import type { Cmt, CUser, Me, PostFull } from "./api";
 
@@ -212,24 +221,75 @@ export const demoBan = (on: boolean) => {
 };
 
 const sealedDemo: number[] = [];
-let plant = null as { kind: string; stage: number; day: number } | null;
-const gardenList = () => [
-  ...(plant
-    ? [{ id: "9000", kind: plant.kind, stage: plant.stage, gifts: 0, name: "Гость демо", own: true }]
+let plant = null as {
+  kind: string;
+  stage: number;
+  day: number;
+  loc: string;
+  color: number;
+  deco: string;
+} | null;
+const gifted = new Set<string>();
+const DEMO_NAMES = [
+  "Дина",
+  "Карл",
+  "Alice",
+  "Bob",
+  "Snak",
+  "Мария",
+  "Иван",
+  "Лена",
+  "Макс",
+  "Оля",
+  "Вера",
+  "Тимур",
+];
+const DEMO_KINDS = ["sunflower", "tulip", "cactus", "tree", "mushroom", "rose", "pumpkin", "lavender"];
+const DEMO_DECOS = ["", "sign", "", "gnome", "", "lantern", "pinwheel", "", "birdhouse", "fence"];
+const gardenLocs = ["meadow", "pond", "orchard", "forest"];
+const demoPlants = (loc: string) => {
+  const k = gardenLocs.indexOf(loc) + 1;
+  return Array.from({ length: 10 + k * 3 }, (_, i) => ({
+    id: `${loc}-${i}`,
+    kind: DEMO_KINDS[(i * 3 + k) % DEMO_KINDS.length]!,
+    stage: (i * 7 + k) % 5,
+    gifts: (i * 5) % 4,
+    color: (i + k) % 7,
+    deco: DEMO_DECOS[(i + k * 2) % DEMO_DECOS.length]!,
+    name: DEMO_NAMES[(i + k) % DEMO_NAMES.length]!,
+    own: false,
+    given: gifted.has(`${loc}-${i}`),
+  }));
+};
+const gardenList = (loc: string) => [
+  ...(plant && plant.loc === loc
+    ? [
+        {
+          id: "9000",
+          kind: plant.kind,
+          stage: plant.stage,
+          gifts: 0,
+          color: plant.color,
+          deco: plant.deco,
+          name: "Гость демо",
+          own: true,
+          given: false,
+        },
+      ]
     : []),
-  { id: "1", kind: "sunflower", stage: 4, gifts: 5, name: "Дина", own: false },
-  { id: "2", kind: "tulip", stage: 3, gifts: 0, name: "Карл", own: false },
-  { id: "3", kind: "cactus", stage: 2, gifts: 1, name: "Alice", own: false },
-  { id: "4", kind: "tree", stage: 1, gifts: 0, name: "Bob", own: false },
-  { id: "5", kind: "mushroom", stage: 4, gifts: 0, name: "Snak", own: false },
-  { id: "6", kind: "tulip", stage: 4, gifts: 2, name: "Мария", own: false },
-  { id: "7", kind: "tree", stage: 3, gifts: 0, name: "Иван", own: false },
-  { id: "8", kind: "cactus", stage: 4, gifts: 0, name: "Лена", own: false },
-  { id: "10", kind: "sunflower", stage: 2, gifts: 0, name: "Макс", own: false },
-  { id: "11", kind: "mushroom", stage: 1, gifts: 0, name: "Оля", own: false },
+  ...demoPlants(loc),
 ];
 const gardenMine = () =>
-  plant ? { kind: plant.kind, stage: plant.stage, can: plant.stage < 4 && plant.day !== 1 } : null;
+  plant
+    ? {
+        kind: plant.kind,
+        stage: plant.stage,
+        can: plant.stage < 4 && plant.day !== 1,
+        loc: plant.loc,
+        color: plant.color,
+        deco: plant.deco,
+      }
+    : null;
 
 export function demoApi(path: string, method: string, body?: any) {
   const url = new URL(path, "http://x");
@@ -252,7 +312,16 @@ export function demoApi(path: string, method: string, body?: any) {
   }
   if (p === "/api/now")
     return ok({ now: { icon: "💻", ru: "Пишу код", en: "Writing code", ts: Date.now() - 20 * 60_000 } });
-  if (p === "/api/garden" && method === "GET") return ok({ plants: gardenList(), mine: gardenMine() });
+  if (p === "/api/garden" && method === "GET") {
+    const loc = gardenLocs.includes(q.get("loc") ?? "") ? q.get("loc")! : "meadow";
+    return ok({
+      loc,
+      counts: Object.fromEntries(gardenLocs.map((x) => [x, gardenList(x).length])),
+      plants: gardenList(loc),
+      mine: gardenMine(),
+      giftsLeft: 5 - gifted.size,
+    });
+  }
   if (p === "/api/capsule" && method === "GET")
     return ok({
       vault: [
@@ -260,7 +329,7 @@ export function demoApi(path: string, method: string, body?: any) {
         { opens: Date.now() + 40 * 86_400_000, name: "Карл" },
         { opens: Date.now() - 1000, name: "Alice" },
         ...sealedDemo.map((o) => ({ opens: o, name: "Гость демо" })),
-      ],
+      ].sort((a, b) => a.opens - b.opens),
       total: 3 + sealedDemo.length,
       mine: sealedDemo.map((o, i) => ({ id: i + 1, created: Date.now(), opens: o, opened: null })),
     });
@@ -272,12 +341,18 @@ export function demoApi(path: string, method: string, body?: any) {
           { ms: 187, name: "Дина", picture: "" },
           { ms: 214, name: "Карл", picture: "" },
         ],
+        week: [
+          { ms: 203, name: "Вера", picture: "" },
+          { ms: 231, name: "Тимур", picture: "" },
+        ],
+        champion: { ms: 192, name: "Дина", picture: "" },
         mine: null,
       });
     const day = dayNumber();
     const g = normalize(q.get("g"));
     if (q.get("g") === null) return ok({ day, streak: 0 });
     if (!validGuess(g)) return ok({ error: "invalid" }, 400);
+    if (!KNOWN.has(g)) return ok({ error: "unknown" }, 422);
     const answer = wordOf(day);
     const pat = score(g, answer);
     const over = pat === "ggggg" || Number(q.get("n")) >= WORD_TRIES;
@@ -285,13 +360,23 @@ export function demoApi(path: string, method: string, body?: any) {
   }
   if (p === "/api/game") return ok({ streak: 1, best: 200, added: [] });
   if (p === "/api/garden") {
-    if (body?.action === "plant") plant = { kind: body.kind, stage: 0, day: -1 };
+    if (body?.action === "plant")
+      plant = { kind: body.kind, stage: 0, day: -1, loc: body.loc, color: body.color, deco: body.deco };
+    if (body?.action === "style" && plant) plant = { ...plant, color: body.color, deco: body.deco };
+    if (body?.action === "gift") {
+      if (gifted.has(body.target)) return ok({ error: "already" }, 409);
+      if (gifted.size >= 5) return ok({ error: "done" }, 409);
+      gifted.add(body.target);
+    }
     if (body?.action === "water" && plant) plant = { ...plant, stage: Math.min(4, plant.stage + 1), day: 1 };
     if (body?.action === "dig") plant = null;
     return ok({ ok: true, added: body?.action === "plant" ? ["gardener"] : [] }, 201);
   }
   if (p === "/api/capsule") {
-    if (typeof body?.opens === "number") sealedDemo.push(body.opens);
+    if (typeof body?.opens === "number") {
+      if (sealedDemo.length >= 3) return ok({ error: "limit" }, 409);
+      sealedDemo.push(body.opens);
+    }
     return ok({ capsule: { id: 1, created: Date.now(), opens: body?.opens, opened: null }, added: [] }, 201);
   }
   if (p === "/api/user/logout") {
@@ -389,6 +474,12 @@ export function demoApi(path: string, method: string, body?: any) {
     if (Date.now() - last < 3000) return ok({ error: "slow" }, 429);
     const list = (store[body.post] ??= []);
     if (list.some((x) => x.user?.id === user!.id && x.text === text)) return ok({ error: "duplicate" }, 409);
+    if (
+      body.post === GUESTBOOK &&
+      !body.parent &&
+      list.filter((x) => x.user?.id === user!.id && !x.parent).length >= GUESTBOOK_MAX
+    )
+      return ok({ error: "guestbook" }, 409);
     last = Date.now();
     const parent = body.parent ? (list.find((x) => x.id === body.parent)?.parent ?? body.parent) : null;
     const card =

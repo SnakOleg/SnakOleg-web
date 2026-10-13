@@ -17,23 +17,8 @@ function metaTags() {
   const image = `${siteUrl}${seo.image}`;
   const person = { "@context": "https://schema.org", "@type": "Person", url: siteUrl, image, ...seo.person };
   return [
-    `<meta name="description" content="${escape(seo.description)}" />`,
     `<link rel="canonical" href="${siteUrl}/" />`,
     `<meta name="theme-color" content="#1b1c1f" />`,
-    `<meta property="og:type" content="website" />`,
-    `<meta property="og:site_name" content="${escape(seo.title)}" />`,
-    `<meta property="og:title" content="${escape(seo.title)}" />`,
-    `<meta property="og:description" content="${escape(seo.description)}" />`,
-    `<meta property="og:url" content="${siteUrl}/" />`,
-    `<meta property="og:image" content="${image}" />`,
-    `<meta property="og:image:width" content="1200" />`,
-    `<meta property="og:image:height" content="630" />`,
-    `<meta property="og:locale" content="ru_RU" />`,
-    `<meta property="og:locale:alternate" content="en_US" />`,
-    `<meta name="twitter:card" content="summary_large_image" />`,
-    `<meta name="twitter:title" content="${escape(seo.title)}" />`,
-    `<meta name="twitter:description" content="${escape(seo.description)}" />`,
-    `<meta name="twitter:image" content="${image}" />`,
     `<script type="application/ld+json">${JSON.stringify(person)}</script>`,
   ].join("\n    ");
 }

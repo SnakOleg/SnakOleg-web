@@ -21,6 +21,9 @@ const ru = {
     newyear: "Новый год",
     halloween: "Хэллоуин",
     valentine: "День святого Валентина",
+    aprilfools: "1 апреля",
+    cosmos: "День космонавтики",
+    programmer: "День программиста",
   } as Record<Holiday, string>,
   now: (city: string, temp: number, what: string) =>
     `${city ? `Сейчас в городе ${city}` : "Сейчас"}: ${temp > 0 ? "+" : ""}${temp}°, ${what.toLowerCase()}`,
@@ -48,6 +51,9 @@ const en: typeof ru = {
     newyear: "New Year",
     halloween: "Halloween",
     valentine: "Valentine's Day",
+    aprilfools: "April Fools' Day",
+    cosmos: "Cosmonautics Day",
+    programmer: "Programmers' Day",
   },
   now: (city, temp, what) =>
     `${city ? `Now in ${city}` : "Now"}: ${temp > 0 ? "+" : ""}${temp}°, ${what.toLowerCase()}`,

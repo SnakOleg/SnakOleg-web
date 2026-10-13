@@ -1,0 +1,1509 @@
+/* garden scenery */
+.gscene {
+  .pines path {
+    fill: var(--pine);
+    opacity: 0.85;
+  }
+  .mow {
+    fill: #fff;
+    opacity: 0.06;
+  }
+  .tufts path {
+    fill: none;
+    stroke: var(--tuft);
+    stroke-linecap: round;
+    stroke-width: 1.8;
+    opacity: 0.8;
+  }
+  .wild path {
+    fill: none;
+    stroke: var(--tuft);
+    stroke-width: 1.6;
+  }
+  .wild .eye {
+    fill: #d99a1a;
+  }
+  .rocks ellipse {
+    fill: #8d9399;
+  }
+  .rocks .hi {
+    fill: #b6bbc0;
+  }
+
+  .mill {
+    .wood {
+      fill: #8a735d;
+    }
+    .roof {
+      fill: #5b4636;
+    }
+    .door {
+      fill: #4a392c;
+    }
+    .hub {
+      fill: #3d3128;
+    }
+    .blades {
+      transform-origin: 0 -6px;
+      animation: g-spin 16s linear infinite;
+    }
+    .blades > path:first-child {
+      fill: none;
+      stroke: #3d3128;
+      stroke-linecap: round;
+      stroke-width: 3;
+    }
+    .sail {
+      fill: none;
+      stroke: #efe6d4;
+      stroke-linecap: round;
+      stroke-width: 7;
+    }
+  }
+
+  .cottage {
+    .wall {
+      fill: #ecdcbc;
+    }
+    .roof {
+      fill: #b5533c;
+    }
+    .chim {
+      fill: #8a5a48;
+    }
+    .door {
+      fill: #7a4a2f;
+    }
+    .win {
+      fill: #bfe5f5;
+      stroke: #7a4a2f;
+      stroke-width: 2;
+    }
+    .smoke circle {
+      fill: #fff;
+      opacity: 0;
+      animation: g-smoke 5s ease-out infinite;
+    }
+  }
+
+  .pond {
+    .bank {
+      fill: #7a6a52;
+    }
+    .water {
+      fill: #4aa6c6;
+    }
+    .shine {
+      fill: #fff;
+      opacity: 0.18;
+      transform: translateY(-4px);
+    }
+    .ripple {
+      fill: none;
+      stroke: #fff;
+      stroke-width: 1.4;
+      opacity: 0;
+      transform-origin: center;
+      transform-box: fill-box;
+      animation: g-ripple 4.4s ease-out infinite;
+    }
+    .pad ellipse {
+      fill: #3f9b5e;
+    }
+    .lotus {
+      fill: #f28bb0;
+    }
+    .reed path {
+      fill: none;
+      stroke: #4b8b4a;
+      stroke-width: 2.4;
+    }
+    .reed rect {
+      fill: #6b4a35;
+    }
+    .duck {
+      animation: g-duck 14s ease-in-out infinite alternate;
+    }
+    .duck .body {
+      fill: #fff;
+    }
+    .duck .beak {
+      fill: #f2992b;
+    }
+    .duck .pupil {
+      fill: #222;
+    }
+  }
+
+  .oak {
+    .trunk {
+      fill: #7a5638;
+    }
+    .branch {
+      stroke: #7a5638;
+      stroke-width: 6;
+    }
+    .crown {
+      fill: var(--leaf);
+    }
+    .crown.dark {
+      fill: var(--leafd);
+    }
+    .crown.light {
+      fill: var(--leafl);
+    }
+    .swing {
+      transform-origin: 0 0;
+      animation: g-swing 4.2s ease-in-out infinite;
+    }
+    .swing path {
+      fill: none;
+      stroke: #5a4330;
+      stroke-width: 2;
+    }
+    .seat {
+      fill: #a9703f;
+    }
+  }
+
+  .fence {
+    .rail {
+      fill: none;
+      stroke: #c9ab7c;
+      stroke-width: 5;
+    }
+    .picket {
+      fill: #efe0c0;
+      stroke: #b99a68;
+      stroke-width: 1.2;
+    }
+    .arch {
+      fill: none;
+      stroke: #a9703f;
+      stroke-linecap: round;
+      stroke-width: 7;
+    }
+    .rose {
+      fill: #e0467a;
+    }
+    .rose.pink {
+      fill: #f28bb0;
+    }
+    .leafy {
+      fill: #3f9b5e;
+    }
+  }
+
+  .stone {
+    fill: #b4b8bd;
+  }
+  .basin {
+    fill: #6fb9d6;
+  }
+  .pole,
+  .leg {
+    fill: none;
+    stroke: #7a5638;
+    stroke-linecap: round;
+    stroke-width: 4;
+  }
+  .sack {
+    fill: #e9d3a2;
+  }
+  .hat {
+    fill: #6b4a35;
+  }
+  .stitch {
+    fill: none;
+    stroke: #4a3a2a;
+    stroke-linecap: round;
+    stroke-width: 2.4;
+  }
+  .shirt {
+    fill: #c2503f;
+  }
+  .tub {
+    fill: #5a8f5a;
+  }
+  .wheel {
+    fill: #333;
+  }
+  .bench rect,
+  .bench path:not(.leg) {
+    fill: #a9703f;
+  }
+  .cat ellipse,
+  .cat circle,
+  .cat path:not(.tail) {
+    fill: #e8a05a;
+  }
+  .cat .tail {
+    fill: none;
+    stroke: #e8a05a;
+    stroke-linecap: round;
+    stroke-width: 4;
+  }
+  .zzz {
+    fill: #fff;
+    font: 700 11px var(--f-head);
+    animation: g-zzz 3s ease-in-out infinite;
+  }
+  .post {
+    fill: none;
+    stroke: #3d3a40;
+    stroke-width: 5;
+  }
+  .head {
+    fill: #3d3a40;
+  }
+  .bulb {
+    fill: #cfd6dc;
+  }
+  .bulb.on {
+    fill: #ffe9a0;
+  }
+  .bush circle {
+    fill: var(--leafd);
+  }
+  .bush .berry {
+    fill: #d9344f;
+  }
+
+  .glow {
+    fill: url(#gglow);
+    animation: g-pulse 3s ease-in-out infinite;
+  }
+  .dusk-wash {
+    fill: #ff9a5a;
+    mix-blend-mode: soft-light;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .night-wash {
+    fill: #0b1440;
+    mix-blend-mode: multiply;
+    opacity: 0.58;
+    pointer-events: none;
+  }
+  .bird {
+    fill: none;
+    stroke: #33414d;
+    stroke-linecap: round;
+    stroke-width: 2;
+    animation: g-bird 30s linear infinite;
+    opacity: 0.8;
+
+    &.h1 {
+      animation-delay: -10s;
+    }
+    &.h2 {
+      animation-delay: -20s;
+    }
+  }
+  .bee {
+    fill: #f7c52c;
+    animation: g-bee 9s ease-in-out infinite;
+
+    &.b1 {
+      animation-delay: -4s;
+    }
+    .stripe {
+      stroke: #2b2118;
+      stroke-width: 1.6;
+    }
+    .wing {
+      fill: #fff;
+      opacity: 0.7;
+    }
+  }
+
+  .can {
+    transform: translate(var(--cx), var(--cy)) scale(var(--k));
+    pointer-events: none;
+  }
+  .canfly {
+    animation: g-canfly 3.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+  .cantilt {
+    animation: g-cantilt 3.6s cubic-bezier(0.45, 0, 0.3, 1) both;
+  }
+  .canbody,
+  .canspout,
+  .canrim {
+    fill: #4fa3d1;
+    stroke: #2c6f94;
+    stroke-linejoin: round;
+    stroke-width: 2;
+  }
+  .canrim {
+    fill: #7cc4e6;
+  }
+  .canrose {
+    fill: #2c6f94;
+  }
+  .cangloss {
+    fill: none;
+    stroke: #fff;
+    stroke-linecap: round;
+    stroke-width: 3;
+    opacity: 0.45;
+  }
+  .canhandle {
+    fill: none;
+    stroke: #2c6f94;
+    stroke-linecap: round;
+    stroke-width: 5;
+
+    &.thin {
+      stroke-width: 3;
+    }
+  }
+  .drop {
+    fill: #9fdcff;
+    opacity: 0;
+    animation: g-drop 0.6s cubic-bezier(0.5, 0, 0.9, 0.6) 2 both;
+  }
+  .splash {
+    fill: none;
+    stroke: #bfe9ff;
+    stroke-width: 2;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: g-splash 0.8s ease-out 1.9s 2 both;
+  }
+}
+
+@keyframes g-smoke {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.5);
+  }
+  20% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(16px, -46px) scale(2.2);
+  }
+}
+@keyframes g-ripple {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.3);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+}
+@keyframes g-duck {
+  to {
+    transform: translateX(90px);
+  }
+}
+@keyframes g-swing {
+  0%,
+  100% {
+    transform: rotate(-9deg);
+  }
+  50% {
+    transform: rotate(9deg);
+  }
+}
+@keyframes g-zzz {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(4px, -8px);
+  }
+}
+@keyframes g-bird {
+  0% {
+    transform: translate(-60px, 90px);
+  }
+  50% {
+    transform: translate(620px, 40px);
+  }
+  100% {
+    transform: translate(1260px, 100px);
+  }
+}
+@keyframes g-bee {
+  0% {
+    transform: translate(300px, 520px);
+  }
+  25% {
+    transform: translate(420px, 470px);
+  }
+  50% {
+    transform: translate(520px, 560px);
+  }
+  75% {
+    transform: translate(380px, 600px);
+  }
+  100% {
+    transform: translate(300px, 520px);
+  }
+}
+@keyframes g-canfly {
+  0% {
+    opacity: 0;
+    transform: translate(170px, -60px);
+  }
+  16% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  82% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(170px, -60px);
+  }
+}
+@keyframes g-cantilt {
+  0%,
+  24% {
+    transform: rotate(0);
+  }
+  38%,
+  68% {
+    transform: rotate(-42deg);
+  }
+  82%,
+  100% {
+    transform: rotate(0);
+  }
+}
+@keyframes g-drop {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  12% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(0, var(--fall));
+  }
+}
+@keyframes g-splash {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.3);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+
+/* seasons: the scenery reads its colours from these */
+.garden {
+  --meadow: #8fcf86;
+  --hill: #6bb773;
+  --far: #58a063;
+  --pine: #2d6444;
+  --tuft: #3f8a4f;
+  --leaf: #4c9a52;
+  --leafd: #3a7e45;
+  --leafl: #66b565;
+
+  &.spring {
+    --meadow: #a3d98c;
+    --leaf: #f2b6cf;
+    --leafd: #7cc46e;
+    --leafl: #fbd3e3;
+  }
+  &.autumn {
+    --meadow: #b4c271;
+    --hill: #9da653;
+    --far: #8a8a4a;
+    --pine: #3a5c3e;
+    --tuft: #8a8a3a;
+    --leaf: #e39a3b;
+    --leafd: #c96d2a;
+    --leafl: #f2c14e;
+  }
+  &.winter .water {
+    fill: #cfe6f2;
+  }
+  &.winter .wild,
+  &.winter .ripple,
+  &.winter .duck,
+  &.winter .frog {
+    display: none;
+  }
+  &.winter {
+    --meadow: #eef3f7;
+    --hill: #dce6ee;
+    --far: #c7d4e0;
+    --pine: #2f5546;
+    --tuft: #b9c6d0;
+    --leaf: #e6edf3;
+    --leafd: #c5d1db;
+    --leafl: #fff;
+  }
+}
+
+.gscene {
+  .meadow {
+    fill: var(--meadow);
+  }
+  .hill {
+    fill: var(--hill);
+  }
+  .far {
+    fill: var(--far);
+    opacity: 0.6;
+  }
+  .gloom {
+    fill: #36465a;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  .ripple {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 1.4;
+    opacity: 0;
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: g-ripple 4.4s ease-out infinite;
+  }
+  .lake {
+    .bankl {
+      fill: #8a7a5e;
+    }
+    .water {
+      fill: #4aa6c6;
+    }
+    .shine {
+      fill: none;
+      stroke: #fff;
+      stroke-linecap: round;
+      stroke-width: 3;
+      opacity: 0.25;
+    }
+  }
+  .pier .plank {
+    fill: #a9703f;
+  }
+  .pier .post {
+    stroke: #6b4a35;
+    stroke-width: 5;
+  }
+  .boat {
+    animation: g-bob 5s ease-in-out infinite;
+
+    .hull {
+      fill: #8a4a2f;
+    }
+    .rim {
+      fill: none;
+      stroke: #c98a5a;
+      stroke-width: 3;
+    }
+    .skin {
+      fill: #f1c7a0;
+    }
+    .hat {
+      fill: #e0b04a;
+    }
+    .coat {
+      fill: #3f6f9e;
+    }
+    .rod,
+    .line {
+      fill: none;
+      stroke: #3d3128;
+      stroke-width: 1.6;
+    }
+    .line {
+      stroke-width: 0.8;
+    }
+  }
+  .reed path {
+    fill: none;
+    stroke: #4b8b4a;
+    stroke-width: 2.4;
+  }
+  .reed rect {
+    fill: #6b4a35;
+  }
+  .frog {
+    fill: #5aa86f;
+    animation: g-frog 9s ease-in-out infinite;
+  }
+
+  .barn {
+    .wall {
+      fill: #b5433c;
+    }
+    .roof {
+      fill: none;
+      stroke: #f2ead8;
+      stroke-width: 6;
+    }
+    .door {
+      fill: #7a2a24;
+    }
+    .cross {
+      stroke: #f2ead8;
+      stroke-width: 3;
+    }
+    .hay {
+      fill: #e9c46a;
+    }
+  }
+  .glasshouse {
+    .glass {
+      fill: #cfeaf3;
+      opacity: 0.65;
+    }
+    .frame {
+      fill: none;
+      stroke: #e8eef2;
+      stroke-width: 3;
+    }
+    .warm {
+      fill: #ffe38a;
+      opacity: 0.5;
+    }
+  }
+  .fruit {
+    .trunk {
+      fill: #7a5638;
+    }
+    .crown {
+      fill: var(--leaf);
+    }
+    .crown.dark {
+      fill: var(--leafd);
+    }
+    .apple {
+      fill: #e0463f;
+    }
+  }
+  .well {
+    .stone {
+      fill: #a7adb3;
+    }
+    .wood {
+      fill: none;
+      stroke: #7a5638;
+      stroke-width: 4;
+      stroke-linejoin: round;
+    }
+  }
+  .furrow {
+    fill: none;
+    stroke: #8a6244;
+    stroke-linecap: round;
+    opacity: 0.55;
+  }
+  .hen {
+    > g {
+      animation: g-peck 2.4s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: 70% 100%;
+    }
+    .body {
+      fill: #fbf6ec;
+    }
+    .comb {
+      fill: #e0463f;
+    }
+    .beak {
+      fill: #f2a33a;
+    }
+    .legs {
+      stroke: #f2a33a;
+      stroke-width: 2;
+    }
+  }
+
+  .birch {
+    .bark {
+      fill: #f2efe8;
+    }
+    .mark {
+      stroke: #3a3a3a;
+      stroke-width: 2.4;
+    }
+    .crown {
+      fill: var(--leaf);
+    }
+    .crown.light {
+      fill: var(--leafl);
+    }
+  }
+  .tent {
+    .cloth {
+      fill: #e9a03b;
+    }
+    .door {
+      fill: none;
+      stroke: #8a5a20;
+      stroke-width: 2.4;
+    }
+  }
+  .camp {
+    .ring {
+      fill: #6d6d6d;
+    }
+    .log {
+      stroke: #6b4a35;
+      stroke-linecap: round;
+      stroke-width: 6;
+    }
+    .fire path {
+      fill: #ff8a3b;
+      transform-box: fill-box;
+      transform-origin: 50% 100%;
+      animation: g-fire 0.6s ease-in-out infinite alternate;
+    }
+    .fire .core {
+      fill: #ffe38a;
+    }
+    .smoke2 {
+      fill: none;
+      stroke: #c9c9c9;
+      stroke-width: 2;
+      opacity: 0.6;
+    }
+  }
+  .shrooms {
+    .stem {
+      fill: #efe3cf;
+    }
+    .cap {
+      fill: #d9473f;
+    }
+  }
+  .log2 rect {
+    fill: #8a5a3a;
+  }
+  .log2 .cut {
+    fill: #d9b48a;
+  }
+  .owl ellipse {
+    fill: #7a6250;
+  }
+  .owl .eyew {
+    fill: #ffe38a;
+    animation: g-blink 5s steps(1) infinite;
+  }
+
+  .life {
+    pointer-events: none;
+  }
+  .actor {
+    will-change: transform;
+  }
+  .pp {
+    .leg,
+    .arm {
+      fill: none;
+      stroke-linecap: round;
+      stroke-width: 6;
+      transform-box: fill-box;
+      transform-origin: 50% 0;
+    }
+    .arm {
+      stroke-width: 4.5;
+    }
+    .eye {
+      fill: #222;
+    }
+    .witch {
+      fill: #4a2a6a;
+    }
+    .santa {
+      fill: #d9343f;
+    }
+    .pom {
+      fill: #fff;
+    }
+    &.walk .leg.l,
+    &.walk .arm.r {
+      animation: g-step 0.5s ease-in-out infinite alternate;
+    }
+    &.walk .leg.r,
+    &.walk .arm.l {
+      animation: g-step 0.5s ease-in-out infinite alternate-reverse;
+    }
+  }
+  .dog {
+    .fur {
+      fill: #c98a4a;
+    }
+    .ear {
+      fill: #8a5a2a;
+    }
+    .eye {
+      fill: #222;
+    }
+    .leg {
+      stroke: #a86f3a;
+      stroke-linecap: round;
+      stroke-width: 3.5;
+      transform-box: fill-box;
+      transform-origin: 50% 0;
+    }
+    .tail {
+      fill: none;
+      stroke: #c98a4a;
+      stroke-linecap: round;
+      stroke-width: 3.5;
+      transform-box: fill-box;
+      transform-origin: 100% 100%;
+      animation: g-wag 0.4s ease-in-out infinite alternate;
+    }
+    &.walk .leg.l {
+      animation: g-step 0.3s ease-in-out infinite alternate;
+    }
+    &.walk .leg.r {
+      animation: g-step 0.3s ease-in-out infinite alternate-reverse;
+    }
+  }
+  .bubbles {
+    pointer-events: none;
+  }
+  .bubble {
+    animation: g-say 4s ease-out both;
+
+    &.late {
+      animation-delay: 0.9s;
+    }
+    rect,
+    path {
+      fill: #fff;
+      stroke: #2a2f3a33;
+    }
+    text {
+      fill: #222;
+      font: 600 14px var(--f-body, system-ui);
+    }
+  }
+
+  .hw {
+    pointer-events: none;
+
+    .gourd {
+      fill: #f27a1a;
+    }
+    .stem {
+      fill: none;
+      stroke: #5a7a2a;
+      stroke-width: 3;
+    }
+    .face {
+      fill: #ffd54a;
+    }
+    .bat {
+      fill: #1d1626;
+      animation: g-bat 14s linear infinite;
+
+      &.t1 {
+        animation-delay: -5s;
+        animation-duration: 18s;
+      }
+      &.t2 {
+        animation-delay: -10s;
+        animation-duration: 11s;
+      }
+    }
+  }
+  .ny {
+    pointer-events: none;
+
+    .fir {
+      fill: #2f6a45;
+    }
+    .trunk {
+      fill: #6b4a35;
+    }
+    .ball {
+      animation: g-pulse 1.6s ease-in-out infinite;
+    }
+    .b0 {
+      fill: #e0463f;
+    }
+    .b1 {
+      fill: #ffd54a;
+      animation-delay: 0.5s;
+    }
+    .b2 {
+      fill: #4fa3d1;
+      animation-delay: 1s;
+    }
+    .star {
+      fill: #ffd54a;
+    }
+    .snowman circle {
+      fill: #fff;
+      stroke: #c9d6e0;
+    }
+    .nose {
+      fill: #f2992b;
+    }
+  }
+
+  .rare {
+    cursor: pointer;
+    animation: g-wander 26s linear infinite;
+
+    .rarebody {
+      transform: translateY(var(--ry));
+    }
+    &.fox .body,
+    &.fox .tail {
+      fill: #e8742c;
+    }
+    &.fox .tip {
+      fill: #fff;
+    }
+    &.fox .leg,
+    &.deer .leg,
+    &.heron .leg {
+      stroke: #6b4a35;
+      stroke-width: 3;
+    }
+    &.deer .body {
+      fill: #a8703a;
+    }
+    &.deer .antler {
+      stroke: #6b4a35;
+      stroke-width: 2.4;
+    }
+    &.heron .body {
+      fill: #cfd6dc;
+    }
+    &.heron .neck {
+      fill: none;
+      stroke: #cfd6dc;
+      stroke-width: 5;
+    }
+    &.heron .beak {
+      fill: #e0b04a;
+    }
+    &.hedgehog .spikes {
+      fill: #6b5444;
+    }
+    &.ufo .disc {
+      fill: #b6c2cc;
+    }
+    &.ufo .dome {
+      fill: #8fe3ff;
+    }
+    &.ufo .beam {
+      fill: #f6ff8a;
+      opacity: 0.25;
+    }
+  }
+
+  .fair {
+    pointer-events: none;
+
+    .counter {
+      fill: #c98a5a;
+    }
+    .awning {
+      fill: #e0467a;
+    }
+    .a1 {
+      fill: #4fa3d1;
+    }
+    .a2 {
+      fill: #5aa86f;
+    }
+    .g0 {
+      fill: #e0463f;
+    }
+    .g1 {
+      fill: #f2b134;
+    }
+    .g2 {
+      fill: #9b7fd6;
+    }
+    .string {
+      stroke: #555;
+      stroke-width: 1;
+    }
+    .balloon {
+      animation: g-bob 4s ease-in-out infinite;
+    }
+    .b0 {
+      fill: #e0467a;
+    }
+    .b1 {
+      fill: #ffd54a;
+    }
+    .b2 {
+      fill: #4fa3d1;
+    }
+  }
+
+  .rainfall path {
+    stroke: #c9e6ff;
+    stroke-linecap: round;
+    stroke-width: 2;
+    opacity: 0.7;
+    animation: g-rain 0.9s linear infinite;
+  }
+  .fall {
+    pointer-events: none;
+
+    g > g {
+      animation: g-leaf 14s linear infinite;
+    }
+    .lf.a {
+      fill: #e39a3b;
+    }
+    .lf.b {
+      fill: #c96d2a;
+    }
+    .flake {
+      fill: #fff;
+    }
+    .petalf {
+      fill: #f7c6d9;
+    }
+  }
+
+  .deco {
+    pointer-events: none;
+  }
+}
+
+.deco {
+  .wood {
+    fill: none;
+    stroke: #7a5638;
+    stroke-width: 3;
+  }
+  .board {
+    fill: #c98a5a;
+    stroke: #7a5638;
+  }
+  &.sign text {
+    fill: #fff;
+    font: 700 11px var(--f-head);
+  }
+  .coat {
+    fill: #3f6f9e;
+  }
+  .skin {
+    fill: #f1c7a0;
+  }
+  .beard {
+    fill: #fff;
+  }
+  .hat {
+    fill: #d9343f;
+  }
+  .lamp {
+    fill: #ffe38a;
+    stroke: #3d3a40;
+    stroke-width: 2;
+  }
+  .halo {
+    fill: #ffe38a;
+    opacity: 0.25;
+  }
+  .p1 {
+    fill: #e0467a;
+  }
+  .p2 {
+    fill: #4fa3d1;
+  }
+  .spin {
+    animation: g-spin 3s linear infinite;
+  }
+  .box {
+    fill: #a9703f;
+  }
+  .roof {
+    fill: #5a7a2a;
+  }
+  .hole {
+    fill: #3d2a1a;
+  }
+  &.minifence path {
+    fill: #efe0c0;
+    stroke: #b99a68;
+  }
+  &.minifence .rail {
+    fill: none;
+    stroke: #c9ab7c;
+    stroke-width: 3;
+  }
+}
+
+.gplaces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.8rem;
+
+  button {
+    display: grid;
+    gap: 0.05rem;
+    padding: 0.5rem 0.9rem;
+    color: var(--ink);
+    font: inherit;
+    text-align: left;
+    background: var(--surf);
+    border: 1px solid var(--line);
+    border-radius: 0.8rem;
+    cursor: pointer;
+
+    small {
+      color: var(--mut);
+      font-size: 0.75rem;
+    }
+    &.on {
+      border-color: var(--acc);
+      box-shadow: 0 0 0 1px var(--acc) inset;
+    }
+  }
+}
+.gscene {
+  transition:
+    opacity 0.26s,
+    translate 0.26s;
+
+  &.leave-right {
+    opacity: 0;
+    translate: -3% 0;
+  }
+  &.leave-left {
+    opacity: 0;
+    translate: 3% 0;
+  }
+}
+.gnav {
+  position: absolute;
+  top: 46%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  color: #fff;
+  font-size: 1.8rem;
+  line-height: 1;
+  background: rgb(0 0 0 / 0.35);
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+
+  &:hover {
+    background: rgb(0 0 0 / 0.55);
+  }
+  &.prev {
+    left: 0.7rem;
+  }
+  &.next {
+    right: 0.7rem;
+  }
+}
+.gwhere {
+  position: absolute;
+  top: 0.8rem;
+  left: 0.8rem;
+  z-index: 2;
+  display: grid;
+  gap: 0.1rem;
+  max-width: min(26rem, 70%);
+  margin: 0;
+  padding: 0.5rem 0.8rem;
+  color: #fff;
+  background: rgb(0 0 0 / 0.35);
+  border-radius: 0.8rem;
+  backdrop-filter: blur(4px);
+
+  span {
+    font-size: 0.8rem;
+    opacity: 0.9;
+  }
+}
+.gat {
+  margin: 0.3rem 0;
+  color: var(--mut);
+  font-size: 0.85rem;
+}
+.gstyle {
+  display: grid;
+  gap: 0.4rem;
+  width: 100%;
+  margin-top: 0.6rem;
+
+  > span {
+    color: var(--mut);
+    font-size: 0.82rem;
+  }
+}
+.gswatch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+
+  button {
+    width: 1.8rem;
+    height: 1.8rem;
+    background: var(--sw);
+    border: 2px solid var(--surf);
+    border-radius: 50%;
+    outline: 1px solid var(--line);
+    cursor: pointer;
+
+    &.on {
+      outline: 2px solid var(--acc);
+    }
+  }
+}
+.gdecos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+
+  button {
+    display: grid;
+    justify-items: center;
+    width: 4.6rem;
+    padding: 0.3rem;
+    color: var(--mut);
+    font: inherit;
+    font-size: 0.7rem;
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: 0.7rem;
+    cursor: pointer;
+
+    svg {
+      width: 2.4rem;
+      height: 2.6rem;
+    }
+    &.on {
+      color: var(--ink);
+      border-color: var(--acc);
+    }
+  }
+}
+
+@keyframes g-bob {
+  50% {
+    transform: translateY(-4px);
+  }
+}
+@keyframes g-frog {
+  0%,
+  80%,
+  100% {
+    transform: translate(330px, 586px);
+  }
+  88% {
+    transform: translate(352px, 560px);
+  }
+  95% {
+    transform: translate(372px, 588px);
+  }
+}
+@keyframes g-peck {
+  0%,
+  60%,
+  100% {
+    transform: rotate(0);
+  }
+  70%,
+  85% {
+    transform: rotate(-28deg);
+  }
+}
+@keyframes g-fire {
+  to {
+    transform: scaleY(1.15) scaleX(0.92);
+  }
+}
+@keyframes g-blink {
+  0%,
+  94% {
+    opacity: 1;
+  }
+  95%,
+  100% {
+    opacity: 0.1;
+  }
+}
+@keyframes g-step {
+  from {
+    transform: rotate(-20deg);
+  }
+  to {
+    transform: rotate(20deg);
+  }
+}
+@keyframes g-wag {
+  to {
+    transform: rotate(25deg);
+  }
+}
+@keyframes g-say {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  10%,
+  85% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes g-bat {
+  0% {
+    transform: translate(-60px, 160px) scale(1);
+  }
+  25% {
+    transform: translate(300px, 90px) scale(0.8);
+  }
+  50% {
+    transform: translate(640px, 200px) scale(1);
+  }
+  75% {
+    transform: translate(960px, 110px) scale(0.8);
+  }
+  100% {
+    transform: translate(1280px, 170px) scale(1);
+  }
+}
+@keyframes g-wander {
+  from {
+    transform: translateX(-80px);
+  }
+  to {
+    transform: translateX(var(--rw));
+  }
+}
+@keyframes g-rain {
+  to {
+    transform: translateY(860px);
+  }
+}
+@keyframes g-leaf {
+  0% {
+    transform: translate(0, 0) rotate(0);
+  }
+  25% {
+    transform: translate(30px, 220px) rotate(120deg);
+  }
+  50% {
+    transform: translate(-20px, 440px) rotate(220deg);
+  }
+  75% {
+    transform: translate(26px, 660px) rotate(320deg);
+  }
+  100% {
+    transform: translate(0, 860px) rotate(420deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gscene .actor {
+    transition: none !important;
+  }
+}
+
+.gscene {
+  .lanepath {
+    fill: none;
+    stroke: #c9a774;
+    stroke-linecap: round;
+    opacity: 0.55;
+  }
+  .bed {
+    .soil {
+      fill: #5a3c28;
+    }
+    .box {
+      fill: #a9703f;
+      stroke: #6e4526;
+      stroke-width: 1.2;
+    }
+    .plank {
+      stroke: #6e4526;
+      stroke-width: 1;
+      opacity: 0.6;
+    }
+    &.idle {
+      opacity: 0.55;
+    }
+    &.free {
+      .soil,
+      .box {
+        fill: rgb(255 255 255 / 0.18);
+        stroke: #fff;
+        stroke-dasharray: 5 5;
+        stroke-width: 1.6;
+      }
+      .plank {
+        display: none;
+      }
+      animation: g-pulse 2s ease-in-out infinite;
+    }
+  }
+  .slot.own .box {
+    fill: #c98a4a;
+    stroke: #ffe27a;
+    stroke-width: 2;
+  }
+  .slot.fav .box {
+    stroke: #ffd54a;
+    stroke-width: 2;
+  }
+  .slot.on .box {
+    stroke: #fff;
+    stroke-width: 2;
+  }
+  .stage {
+    transform-origin: 600px 560px;
+  }
+  &.panning {
+    pointer-events: none;
+  }
+}
+.gnav:disabled,
+.gplaces button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.gwhere {
+  animation: g-where 0.6s ease-out both;
+
+  span {
+    padding: 0.1rem 0.5rem;
+    background: rgb(255 255 255 / 0.18);
+    border-radius: 999px;
+    justify-self: start;
+  }
+}
+@keyframes g-where {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}

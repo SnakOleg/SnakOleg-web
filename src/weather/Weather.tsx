@@ -56,6 +56,8 @@ export function Weather({ prefs, report }: { prefs: WxPrefs; report: Report | nu
       <canvas class="wx" ref={canvas} aria-hidden="true" />
       {holiday === "newyear" && <Garland />}
       {holiday === "halloween" && <img class="web" src={cobweb} alt="" aria-hidden="true" />}
+      {holiday === "cosmos" && <Rocket />}
+      {holiday === "programmer" && <Binary />}
     </>
   );
 }
@@ -73,6 +75,33 @@ function Garland() {
         const y = 4 + 18 * Math.abs(Math.sin(x * Math.PI * 4));
         return <i style={{ left: `${x * 100}%`, top: `${y}px`, "--d": `${(i % 4) * 0.4}s` }} />;
       })}
+    </div>
+  );
+}
+
+function Rocket() {
+  return (
+    <svg class="rocket" viewBox="0 0 40 80" aria-hidden="true">
+      <path d="M20 4q12 14 12 38v14H8V42Q8 18 20 4z" class="hull" />
+      <circle cx="20" cy="32" r="6" class="port" />
+      <path d="M8 46l-6 16h6zM32 46l6 16h-6z" class="fin" />
+      <path d="M12 58q8 22 16 0z" class="flame" />
+    </svg>
+  );
+}
+
+const BITS = Array.from({ length: 14 }, (_, i) => ({
+  x: (i * 37 + 5) % 100,
+  d: (i * 1.7) % 9,
+  t: Array.from({ length: 12 }, (_, j) => ((i * 7 + j * 3) % 5 > 1 ? "1" : "0")).join(""),
+}));
+
+function Binary() {
+  return (
+    <div class="binary" aria-hidden="true">
+      {BITS.map((b) => (
+        <span style={{ left: `${b.x}%`, animationDelay: `-${b.d}s` }}>{b.t}</span>
+      ))}
     </div>
   );
 }

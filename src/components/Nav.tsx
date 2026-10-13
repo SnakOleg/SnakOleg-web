@@ -3,6 +3,7 @@ import { site } from "../config";
 import type { L } from "../lib/i18n";
 import { gameStrings } from "../games/strings";
 import { Ico } from "./ui/Icon";
+import { seasonOf } from "../../shared/stamps";
 
 type Props = {
   l: L;
@@ -20,7 +21,7 @@ export function Nav({ l, setL, open, setOpen, gearRef, page = "home" }: Props) {
     <nav class="nav">
       <a class="brand" href="/" aria-label="Snak / Oleg">
         <b>
-          Snak <span>/ Oleg</span>
+          {seasonOf() === "aprilfools" ? "Snack 🥨" : "Snak"} <span>/ Oleg</span>
         </b>
       </a>
       <a class="anc" href={h + "#projects"}>

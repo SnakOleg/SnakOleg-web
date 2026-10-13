@@ -72,6 +72,25 @@ export function geo(req: Request): Geo {
   };
 }
 
+const offsetOf = (zone: string) => {
+  try {
+    return new Intl.DateTimeFormat("en-US", { timeZone: zone, timeZoneName: "longOffset" })
+      .formatToParts(new Date())
+      .find((p) => p.type === "timeZoneName")?.value;
+  } catch {
+    return undefined;
+  }
+};
+
+// The IP country counts only when the browser clock agrees with it, so a VPN exit elsewhere is not taken at face value.
+export function trustedCountry(req: Request, tz: unknown): string | null {
+  const cf = (req.cf ?? {}) as Record<string, string | undefined>;
+  if (!cf.country || !cf.timezone || typeof tz !== "string" || !tz || tz.length > 64) return null;
+  if (cf.timezone === tz) return cf.country;
+  const a = offsetOf(cf.timezone);
+  return a && a === offsetOf(tz) ? cf.country : null;
+}
+
 export const audit = (env: Env, req: Request, actor: string, action: string, detail = "") => {
   const g = geo(req);
   return env.DB.prepare(

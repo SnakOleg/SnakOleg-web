@@ -1,5 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import { api } from "../blog/api";
+import { Teaser } from "../blog/Teaser";
 import type { PostBrief } from "../blog/api";
 import { ago, strings } from "../blog/strings";
 import type { L } from "../lib/i18n";
@@ -31,7 +32,7 @@ export function BlogPreview({ l }: { l: L }) {
             <a href={`/blog/${p.id}`}>
               <time>{ago(p.pub, l)}</time>
               <b>{p.title}</b>
-              <span>{p.excerpt}</span>
+              <Teaser src={p.excerpt} />
               <small>
                 <Ico n="message" /> {p.comments}
                 <Ico n="eye" /> {p.views}

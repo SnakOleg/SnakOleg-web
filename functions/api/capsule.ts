@@ -1,4 +1,11 @@
-import { CAPSULE_ACTIVE, CAPSULE_MAX, CAPSULE_MAX_MS, CAPSULE_MIN_MS } from "../../shared/garden";
+import {
+  CAPSULE_ACTIVE,
+  CAPSULE_BAY,
+  CAPSULE_LIFETIME,
+  CAPSULE_MAX,
+  CAPSULE_MAX_MS,
+  CAPSULE_MIN_MS,
+} from "../../shared/garden";
 import { cleanText } from "../../shared/blog";
 import { getUser, requireUser } from "./_blog";
 import { Env, json, limit } from "./_lib";
@@ -19,8 +26,10 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   const u = await getUser(request, env);
   const [vault, total] = await Promise.all([
     env.DB.prepare(
-      "SELECT c.opens, u.name FROM capsules c JOIN users u ON u.id=c.user_id WHERE c.opened IS NULL ORDER BY c.opens LIMIT 24",
-    ).all<{ opens: number; name: string }>(),
+      "SELECT c.opens, u.name FROM capsules c JOIN users u ON u.id=c.user_id WHERE c.opened IS NULL ORDER BY c.opens LIMIT ?",
+    )
+      .bind(CAPSULE_BAY)
+      .all<{ opens: number; name: string }>(),
     env.DB.prepare("SELECT COUNT(*) n FROM capsules WHERE opened IS NULL").first<{ n: number }>(),
   ]);
   const mine = u
@@ -55,10 +64,15 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   if (!text || !Number.isFinite(opens)) return json({ error: "invalid" }, 400);
   if (text.length > CAPSULE_MAX) return json({ error: "too_long" }, 413);
   if (opens < now + CAPSULE_MIN_MS || opens > now + CAPSULE_MAX_MS) return json({ error: "bad_date" }, 400);
-  const active = await env.DB.prepare("SELECT COUNT(*) n FROM capsules WHERE user_id=? AND opened IS NULL")
-    .bind(u.id)
-    .first<{ n: number }>();
-  if ((active?.n ?? 0) >= CAPSULE_ACTIVE) return json({ error: "limit" }, 409);
+  const [mineN, bayN] = await Promise.all([
+    env.DB.prepare("SELECT COUNT(*) n, COALESCE(SUM(opened IS NULL),0) open FROM capsules WHERE user_id=?")
+      .bind(u.id)
+      .first<{ n: number; open: number }>(),
+    env.DB.prepare("SELECT COUNT(*) n FROM capsules WHERE opened IS NULL").first<{ n: number }>(),
+  ]);
+  if ((mineN?.n ?? 0) >= CAPSULE_LIFETIME) return json({ error: "lifetime" }, 409);
+  if ((mineN?.open ?? 0) >= CAPSULE_ACTIVE) return json({ error: "limit" }, 409);
+  if ((bayN?.n ?? 0) >= CAPSULE_BAY) return json({ error: "full" }, 409);
   const row = await env.DB.prepare(
     "INSERT INTO capsules(user_id,body,created,opens) VALUES (?,?,?,?) RETURNING id",
   )

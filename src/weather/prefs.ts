@@ -2,7 +2,16 @@ import { seasonOf } from "../../shared/stamps";
 import { useEffect, useState } from "preact/hooks";
 
 export const SKIES = ["auto", "off", "clear", "clouds", "rain", "downpour", "storm", "snow", "fog"] as const;
-export const HOLIDAYS = ["auto", "off", "newyear", "halloween", "valentine"] as const;
+export const HOLIDAYS = [
+  "auto",
+  "off",
+  "newyear",
+  "halloween",
+  "valentine",
+  "aprilfools",
+  "cosmos",
+  "programmer",
+] as const;
 export type Sky = (typeof SKIES)[number];
 export type Holiday = (typeof HOLIDAYS)[number];
 export type WxPrefs = { sky: Sky; holiday: Holiday };
