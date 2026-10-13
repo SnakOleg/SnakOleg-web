@@ -475,7 +475,7 @@ test("blog: posts are admin-only to write, drafts and scheduled posts stay priva
     [made.body.id],
   );
   assert.deepEqual(list.posts[0].tags, ["код"]);
-  assert.equal(list.posts[0].excerpt, "Привет Текст поста");
+  assert.equal(list.posts[0].excerpt, "Привет\nТекст поста");
   assert.equal((await call(`/api/blog/posts/${draft.body.id}`)).status, 404);
   assert.equal((await call(`/api/blog/posts/${later.body.id}`)).status, 404);
   assert.equal((await call(`/api/blog/posts/${made.body.id}`)).body.post.title, "Первый <b>пост</b>");
@@ -740,6 +740,38 @@ test("blog: the owner posts and moderates from the page, replies remember who th
   assert.equal((await mod(OWNER, { action: "comment", comment: second.id, to: "hidden" })).status, 200);
   const after = (await call(`/api/blog/comments?post=${made.body.id}`)).body.comments;
   assert.ok(!after.some((c: { id: number }) => c.id === second.id || c.id === third.id));
+
+  assert.equal((await mod("7001", { action: "pin", comment: first.id, pin: true })).status, 403);
+  assert.equal((await mod(OWNER, { action: "pin", comment: second.id, pin: true })).status, 404);
+  assert.equal((await mod(OWNER, { action: "pin", comment: first.id, pin: true })).status, 200);
+  const pinnedList = (await call(`/api/blog/comments?post=${made.body.id}`)).body.comments;
+  assert.equal(pinnedList.find((c: { id: number }) => c.id === first.id).pinned, true);
+
+  const guest = (as: string, text: string) =>
+    call("/api/blog/comments", {
+      method: "POST",
+      headers: visitor(as),
+      body: JSON.stringify({ post: 0, body: text }),
+    });
+  const hello = (await guest("7001", "Привет из гостевой")).body.comment;
+  assert.ok(hello.id);
+  assert.equal(
+    (
+      await call("/api/blog/comments", {
+        method: "POST",
+        headers: visitor("7001"),
+        body: JSON.stringify({ post: -1, body: "x" }),
+      })
+    ).status,
+    400,
+  );
+  assert.equal((await guest("7004", "И я тут")).status, 201);
+  assert.equal((await mod(OWNER, { action: "pin", comment: hello.id, pin: true })).status, 200);
+  const book = (await call("/api/blog/comments?post=0")).body.comments;
+  assert.equal(book.length, 2);
+  assert.equal(book.filter((c: { pinned: boolean }) => c.pinned).length, 1);
+  assert.equal((await mod(OWNER, { action: "comment", comment: hello.id, to: "deleted" })).status, 200);
+  assert.equal((await call("/api/blog/comments?post=0")).body.comments.length, 1);
 
   const rep = await call("/api/blog/report", {
     method: "POST",

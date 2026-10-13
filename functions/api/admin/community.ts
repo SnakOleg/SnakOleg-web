@@ -35,7 +35,7 @@ export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
             : "c.status=?1";
       const before = Number(q.get("before"));
       const stmt = env.DB.prepare(
-        `SELECT c.id,c.post_id,c.user_id,c.body,c.status,c.flags,c.reports,c.created,p.title post,u.name,u.username,u.picture,u.comments total,
+        `SELECT c.id,c.post_id,c.user_id,c.body,c.status,c.flags,c.reports,c.created,COALESCE(p.title,'Гостевая книга') post,u.name,u.username,u.picture,u.comments total,
            EXISTS(SELECT 1 FROM bans b WHERE b.user_id=c.user_id AND b.lifted=0 AND b.scope IN ('blog','all') AND (b.until IS NULL OR b.until>${now})) banned
          FROM comments c LEFT JOIN posts p ON p.id=c.post_id LEFT JOIN users u ON u.id=c.user_id
          WHERE ${where} AND c.created<?2 ORDER BY c.created DESC LIMIT 40`,

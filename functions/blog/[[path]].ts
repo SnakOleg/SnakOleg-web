@@ -46,7 +46,7 @@ export const onRequestGet: PagesFunction<Assets> = async ({ request, env, params
   }
 
   const page = await shell(env, url);
-  if (!seg.length) return page;
+  if (!seg.length || (seg.length === 1 && seg[0] === "guestbook")) return page;
   const id = Number(seg[0]);
   if (seg.length > 1 || !/^\d+$/.test(seg[0]))
     return new Response(page.body, { status: 404, headers: page.headers });

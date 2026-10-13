@@ -141,21 +141,21 @@ The unit tests cover tokens, content validation, dates and device parsing. The i
 
 The blog lives at `/blog` (a short preview with a button is shown on the home page). Everything is managed in the dashboard.
 
-- **Blog**: write posts in Markdown (headings, lists, tables, code with highlighting, callouts `> [!TIP]`, spoilers `||text||`, images). The editor has a toolbar and a live preview; Ctrl+S saves, drafts of new posts are kept in the browser. Posts can be pinned, scheduled for a later date and closed for comments. An RSS feed is served at `/blog/rss.xml` and every post has its own link preview.
+- **Блог**: write posts in Markdown (headings, lists, tables, code with highlighting, callouts `> [!TIP]`, spoilers `||text||`, images). The editor has a toolbar and a live preview; Ctrl+S saves, drafts of new posts are kept in the browser. Posts can be pinned, scheduled for a later date and closed for comments. An RSS feed is served at `/blog/rss.xml` and every post has its own link preview.
 - **Posting from the blog page**: when you sign in on `/blog` with your own Telegram account, a "Что нового?" bar appears above the feed and every post has a "..." menu (edit, pin, delete). The editor there has Markdown, a preview, tags, a cover and a draft button. Scheduling a post for later is done in the dashboard. At most three posts can be pinned; they stay on top, newest first.
 - **Moderation on the page**: signed in as the owner you get a "..." menu on every comment: hide, delete, mark as not spam and ban the author (with a reason, a term and an option to delete all their comments). A person cannot be banned twice for the same scope, lift the old ban first.
 - **Threads**: replies are nested under the comment they answer, with a curved thread line. Hiding or deleting a comment removes its replies too. Comments can be sorted by newest, top or oldest. A comment the owner reacted to is highlighted and marked "Автору понравилось".
 - **Who reacted**: the owner can click the view counter of a post to see who reacted, with which emoji and when.
 - **Many topics**: the sidebar shows the twenty most used topics, the rest opens in a searchable list.
 - **Visitors sign in with Telegram** through the same `/api/auth/callback`. **No extra Allowed URL is needed**: the sign-in uses the origin and callback you registered for the dashboard. Visitors can comment, reply, react (up to 3 reactions per item), report and share.
-- **Community**: moderation of comments (filters: possible spam, on review, reported), users (ban, trust (the person's comments skip premoderation), erase comments, delete account), bans (with lifting) and rules (comments on/off, pause between comments, comments per day, premoderation of newcomers, theme suggestions per day).
+- **Сообщество**: moderation of comments (filters: possible spam, on review, reported), users (ban, trust (the person's comments skip premoderation), erase comments, delete account), bans (with lifting) and rules (comments on/off, pause between comments, comments per day, premoderation of newcomers, theme suggestions per day).
 - **Protections**: pause between comments, daily limit, per-IP limit, duplicate and copy detection, scoring for links, invites, ads, abuse and CAPS. Suspicious comments are labelled "Возможный спам" and the text is not sent to the browser until the visitor presses "Всё равно показать"; links inside stay inactive. A report asks for a reason first. Three reports from different people flag a comment automatically. You (any id in `ADMIN_TG_ID`) are never limited and cannot be banned.
 - **Bans**: scope is blog, themes or everything, for 1, 7 or 30 days or forever, with a reason shown to the person together with your contact (@The_Nikeri) so they can write to you. The "Темы" page also has a "Заблокировать автора" button.
 - With `TG_BOT_TOKEN` set you get a Telegram message about new comments that need your attention. Without it nothing is sent.
 
 ## Announcements
 
-Dashboard, Content, Announces: a centered notice or a running line (бегущая строка) at the top of every page, with colors, dates and the option to dismiss.
+Dashboard, Контент, Объявления: a centered notice or a running line (бегущая строка) at the top of every page, with colors, dates and the option to dismiss.
 
 ## Fonts and 2003 mode
 
@@ -163,4 +163,4 @@ The customizer has a font switcher (the fonts are bundled, no external hosts). T
 
 ## Themes from visitors
 
-Suggestions arrive through `POST /api/presets` and wait in the `presets` table until you approve them on the "Темы" page. The text is cleaned (no markup), the colors are checked for contrast on the server too, and exact duplicates are refused. Accepting can be switched off in Content, Оформление ("Принимать темы от посетителей"). Approved themes are cached for a few minutes. Suggesting a theme requires a Telegram sign-in, so you can block abusers per person (see "Community" below). The migrations `0003` to `0007` (history notes, click limits, presets, blog, community and replies) are applied by `npm run db:migrate`.
+Suggestions arrive through `POST /api/presets` and wait in the `presets` table until you approve them on the "Темы" page. The text is cleaned (no markup), the colors are checked for contrast on the server too, and exact duplicates are refused. Accepting can be switched off in Content, Оформление ("Принимать темы от посетителей"). Approved themes are cached for a few minutes. Suggesting a theme requires a Telegram sign-in, so you can block abusers per person (see "Community" below). The migrations `0003` to `0008` (history notes, click limits, presets, blog, community, replies and pinned comments) are applied by `npm run db:migrate`.

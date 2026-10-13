@@ -77,3 +77,7 @@ A project card opens a detail window with a longer text, your role, the reposito
 - The 404 page hides a small snake game ("catch the bugs").
 - Themes: visitors can pick a ready palette or build their own from five colors in the settings panel. Palettes with unreadable text are flagged. A visitor can suggest a palette, it appears for everyone only after you approve it in the dashboard ("Темы"). Limits: 5 suggestions an hour per address, 100 waiting, 300 stored.
 - The 2003 mode (Konami code, or "Режим 2003" in the settings panel) rebuilds the page as an old personal homepage: scanlines, neon grid, a marquee, 88x31 buttons, sparkles behind the pointer and a visitor counter that shows the real number of page views.
+
+## License
+
+[MIT](LICENSE). You may use and change the code, but the copyright line and the license text must stay in every copy, so the author (SnakOleg) is credited. Fonts and libraries keep their own licenses.

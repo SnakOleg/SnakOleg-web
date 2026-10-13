@@ -1,4 +1,4 @@
-import { COMMENT_MAX, cleanText } from "../../../shared/blog";
+import { COMMENT_MAX, GUESTBOOK, cleanText } from "../../../shared/blog";
 import { isSpam, scoreComment } from "../../../shared/spam";
 import { activeBan, banBody, getSettings, getUser, hashIp, publicUser, requireUser } from "../_blog";
 import { Env, geo, json, limit, localDay, notify } from "../_lib";
@@ -13,6 +13,7 @@ type Row = {
   status: string;
   created: number;
   edited: number | null;
+  pinned: number;
   name: string | null;
   username: string | null;
   picture: string | null;
@@ -36,6 +37,7 @@ export const toPublic = (r: Row, env: Env, me: string | null) => {
     pending: r.status === "pending",
     created: r.created,
     edited: r.edited,
+    pinned: r.pinned === 1,
     own: r.user_id === me,
   };
 };
@@ -45,7 +47,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   if (!Number.isInteger(post)) return json({ error: "invalid" }, 400);
   const me = await getUser(request, env);
   const { results } = await env.DB.prepare(
-    `SELECT c.id,c.parent_id,c.reply_to,c.user_id,c.body,c.status,c.created,c.edited,u.name,u.username,u.picture
+    `SELECT c.id,c.parent_id,c.reply_to,c.user_id,c.body,c.status,c.created,c.edited,c.pinned,u.name,u.username,u.picture
      FROM comments c LEFT JOIN users u ON u.id=c.user_id
      WHERE c.post_id=?1 AND (c.status IN ('visible','flagged') OR (c.status='pending' AND c.user_id=?2))
      ORDER BY c.created ASC LIMIT 400`,
@@ -91,15 +93,18 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
   const body = (await request.json().catch(() => null)) as Record<string, unknown> | null;
   const postId = Number(body?.post);
   const text = cleanText(body?.body, COMMENT_MAX + 1);
-  if (!Number.isInteger(postId) || !text) return json({ error: "invalid" }, 400);
+  if (!Number.isInteger(postId) || postId < 0 || !text) return json({ error: "invalid" }, 400);
   if (text.length > COMMENT_MAX) return json({ error: "too_long" }, 413);
 
   const settings = await getSettings(env);
-  const post = await env.DB.prepare(
-    "SELECT id,title,comments_open FROM posts WHERE id=? AND status='published' AND pub<=?",
-  )
-    .bind(postId, Date.now())
-    .first<{ id: number; title: string; comments_open: number }>();
+  const post =
+    postId === GUESTBOOK
+      ? { id: GUESTBOOK, title: "Гостевая книга", comments_open: 1 }
+      : await env.DB.prepare(
+          "SELECT id,title,comments_open FROM posts WHERE id=? AND status='published' AND pub<=?",
+        )
+          .bind(postId, Date.now())
+          .first<{ id: number; title: string; comments_open: number }>();
   if (!post) return json({ error: "not_found" }, 404);
   if (!settings.commentsOpen || !post.comments_open) return json({ error: "closed" }, 403);
 
@@ -186,6 +191,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
         deleted: false,
         created: now,
         edited: null,
+        pinned: false,
         own: true,
         reactions: {},
         mine: [],

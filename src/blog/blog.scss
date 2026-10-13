@@ -353,6 +353,7 @@
   }
   .ex {
     margin: 0;
+    white-space: pre-line;
     color: var(--mut);
   }
 }
@@ -499,6 +500,17 @@
     &:hover {
       color: var(--ink);
     }
+  }
+}
+.guestbook {
+  h1 {
+    margin: 0;
+    font: 700 clamp(1.6rem, 5vw, 2.3rem) / 1.2 var(--f-head);
+    letter-spacing: -0.02em;
+  }
+  > .muted {
+    margin: 0.4rem 0 1.2rem;
+    padding: 0;
   }
 }
 .art-post {
@@ -819,6 +831,14 @@ $bend: 1.15rem;
     line-height: 1.55;
   }
 
+  .pin {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin: 0 0 0.2rem;
+    font-size: 0.8rem;
+    color: var(--acc);
+  }
   .pend {
     margin: 0.2rem 0;
     color: var(--mut);

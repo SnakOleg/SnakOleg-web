@@ -57,8 +57,17 @@ export function plainText(md: string) {
     .trim();
 }
 
+/** Comments with this post id belong to the guestbook, not to a post. */
+export const GUESTBOOK = 0;
+export const MAX_PINNED = 3;
+
 export function excerptOf(md: string, max = 220) {
-  const t = plainText(md);
+  const t = md
+    .replace(/```[\s\S]*?```/g, " ")
+    .split("\n")
+    .map(plainText)
+    .filter(Boolean)
+    .join("\n");
   if (t.length <= max) return t;
   return t.slice(0, max).replace(/\s+\S*$/, "") + "…";
 }

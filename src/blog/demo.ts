@@ -165,6 +165,15 @@ const likers: Record<number, Liker[]> = {
   2: [{ user: DINA, emoji: "👍", created: now - 3 * H }],
 };
 
+c(0, 11, CARL, "Зашёл по ссылке из телеги, сайт классный. Тема с подсветкой кода огонь.", 3 * H, {
+  reactions: { "🔥": 4, "❤️": 2 },
+});
+c(0, 12, OWNER, "Спасибо, что заглянули! Пишите, что понравилось и чего не хватает.", 26 * H, {
+  pinned: true,
+  reactions: { "❤️": 5 },
+});
+c(0, 13, DINA, "Привет из Питера!", 50 * H, { reactions: { "👍": 1 } });
+
 const closeThread = (id: number, deleted: boolean) => {
   const all = Object.values(store).flat();
   const gone = new Set([id]);
@@ -335,6 +344,13 @@ export function demoApi(path: string, method: string, body?: any) {
       const f = all.find((x) => x.id === body.comment);
       if (f && body.to === "visible") Object.assign(f, { flagged: false, body: f.text });
       else if (f) closeThread(f.id, true);
+    }
+    if (body.action === "pin") {
+      const f = all.find((x) => x.id === body.comment && !x.parent);
+      if (!f) return ok({ error: "not_found" }, 404);
+      if (body.pin && all.filter((x) => x.post === f.post && x.pinned).length >= 3)
+        return ok({ error: "pin_limit" }, 409);
+      f.pinned = !!body.pin;
     }
     if (body.action === "ban" && body.purge)
       all

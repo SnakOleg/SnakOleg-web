@@ -1,5 +1,6 @@
 import { banUser, requireUser } from "../_blog";
 import { Env, audit, json } from "../_lib";
+import { MAX_PINNED } from "../../../shared/blog";
 import { closeThread } from "./_shared";
 
 type Body = {
@@ -11,6 +12,7 @@ type Body = {
   reason?: string;
   purge?: boolean;
   scope?: string;
+  pin?: boolean;
 };
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
@@ -30,6 +32,26 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       if (b.to === "visible")
         await env.DB.prepare("DELETE FROM reports WHERE comment_id=?").bind(Number(b.comment)).run();
       await audit(env, request, u.id, "mod_comment", `${b.comment} -> ${b.to}`);
+      return json({ ok: true });
+    }
+    case "pin": {
+      const id = Number(b.comment);
+      const c = await env.DB.prepare(
+        "SELECT post_id FROM comments WHERE id=? AND parent_id IS NULL AND status IN ('visible','flagged')",
+      )
+        .bind(id)
+        .first<{ post_id: number }>();
+      if (!c) return json({ error: "not_found" }, 404);
+      if (b.pin) {
+        const n = await env.DB.prepare("SELECT COUNT(*) n FROM comments WHERE post_id=? AND pinned=1")
+          .bind(c.post_id)
+          .first<{ n: number }>();
+        if ((n?.n ?? 0) >= MAX_PINNED) return json({ error: "pin_limit" }, 409);
+      }
+      await env.DB.prepare("UPDATE comments SET pinned=? WHERE id=?")
+        .bind(b.pin ? 1 : 0, id)
+        .run();
+      await audit(env, request, u.id, "mod_pin", `${id} ${b.pin ? "on" : "off"}`);
       return json({ ok: true });
     }
     case "ban": {

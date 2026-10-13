@@ -37,7 +37,7 @@ export async function closeThread(env: Env, id: number, status: "hidden" | "dele
        UNION
        SELECT c.id FROM comments c JOIN t ON c.reply_to=t.id OR (c.reply_to IS NULL AND c.parent_id=t.id)
      )
-     UPDATE comments SET status=?2${status === "deleted" ? ", body=''" : ""} WHERE id IN (SELECT id FROM t)`,
+     UPDATE comments SET status=?2, pinned=0${status === "deleted" ? ", body=''" : ""} WHERE id IN (SELECT id FROM t)`,
   )
     .bind(id, status)
     .run();

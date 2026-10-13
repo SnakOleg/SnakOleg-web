@@ -1,6 +1,8 @@
 {
   "name": "snak-site",
   "private": true,
+  "license": "MIT",
+  "author": "SnakOleg",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -204,7 +204,7 @@ export function RetroFooter({ l }: { l: L }) {
         </button>
       </div>
       <p class="r-guest">
-        📖 {t.guest}: <a href="/blog">{t.sign}</a>
+        📖 {t.guest}: <a href="/blog/guestbook">{t.sign}</a>
       </p>
       <p class="r-note">
         {t.clock}: <Clock /> · {t.best}

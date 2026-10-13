@@ -2,6 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import { Shell } from "../components/Shell";
 import { Ico } from "../components/ui/Icon";
 import { site } from "../config";
+import { GUESTBOOK } from "../../shared/blog";
 import { renderPost } from "../lib/markdown";
 import type { Toc } from "../lib/markdown";
 import type { L } from "../lib/i18n";
@@ -160,6 +161,9 @@ function FeedPage({ l, search }: { l: L; search: string }) {
             <a href="https://t.me/SnakOleg" target="_blank" rel="noopener noreferrer">
               <Ico n="telegram" /> {b.channel}
             </a>
+            <Link to="/blog/guestbook">
+              <Ico n="book" /> {b.guest}
+            </Link>
             <a href="/blog/rss.xml">
               <Ico n="rss" /> {b.rss}
             </a>
@@ -215,6 +219,23 @@ function FeedPage({ l, search }: { l: L; search: string }) {
         <Sidebar l={l} tags={feed?.tags ?? []} tag={tag} q={q} />
       </div>
     </>
+  );
+}
+
+function GuestPage({ l }: { l: L }) {
+  const b = strings(l);
+  useEffect(() => {
+    document.title = `${b.guest} - Snak / Oleg`;
+  }, [l]);
+  return (
+    <div class="single guestbook" id="main">
+      <Link to="/blog" class="back">
+        <Ico n="arrow-right" /> {b.back}
+      </Link>
+      <h1>{b.guest}</h1>
+      <p class="muted">{b.guestHint}</p>
+      <Comments post={GUESTBOOK} open l={l} guest />
+    </div>
   );
 }
 
@@ -358,7 +379,13 @@ function Page({ l }: { l: L }) {
   }, [l]);
   return (
     <div class="blog" onClick={spoiler}>
-      {m ? <PostPage id={Number(m[1])} l={l} /> : <FeedPage l={l} search={search} />}
+      {m ? (
+        <PostPage id={Number(m[1])} l={l} />
+      ) : pathname.replace(/\/$/, "") === "/blog/guestbook" ? (
+        <GuestPage l={l} />
+      ) : (
+        <FeedPage l={l} search={search} />
+      )}
       <EditorHost l={l} />
       <Toasts />
       <AskHost l={l} />

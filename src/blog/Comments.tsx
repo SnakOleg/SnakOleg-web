@@ -100,7 +100,15 @@ function Item({ c, l, canReply, replyName, line, onReply, onPatch, onReload, onB
   };
 
   const mine = c.own;
+  const pin = async () => {
+    const r = await api("/api/blog/mod", "POST", { action: "pin", comment: c.id, pin: !c.pinned });
+    if (r.ok) onReload();
+    else toast(errorText(r.data, b.errors));
+  };
   const items = [
+    owner &&
+      !c.parent &&
+      !c.deleted && { label: c.pinned ? b.unpin : b.pin, icon: "pin", run: () => void pin() },
     editable && { label: b.edit, icon: "edit", run: () => setEdit(c.body) },
     mine && { label: b.delete, icon: "trash", danger: true, run: () => void remove() },
     !mine && !!me?.user && !reported && { label: b.report, icon: "flag", run: () => setReporting(true) },
@@ -116,7 +124,7 @@ function Item({ c, l, canReply, replyName, line, onReply, onPatch, onReload, onB
   const liked = c.byOwner && c.byOwner.length > 0;
 
   return (
-    <article class={`cm${liked ? " liked" : ""}`} id={`c${c.id}`}>
+    <article class={`cm${liked ? " liked" : ""}${c.pinned ? " pinned" : ""}`} id={`c${c.id}`}>
       <div class="avcol">
         <Avatar user={c.user} size={32} />
         {line && <i class="thread" aria-hidden="true" />}
@@ -130,6 +138,11 @@ function Item({ c, l, canReply, replyName, line, onReply, onPatch, onReload, onB
           </time>
           {edit === null && <Menu items={items} l={l} />}
         </header>
+        {c.pinned && (
+          <p class="pin">
+            <Ico n="pin" /> {b.pinned}
+          </p>
+        )}
         {replyName && (
           <p class="to">
             <Ico n="reply" /> {b.inReplyTo} <b>{replyName}</b>
@@ -421,11 +434,13 @@ export function Comments({
   open,
   l,
   onCount,
+  guest,
 }: {
   post: number;
   open: boolean;
   l: L;
   onCount?: (n: number) => void;
+  guest?: boolean;
 }) {
   const b = strings(l);
   const me = useMe();
@@ -461,7 +476,7 @@ export function Comments({
       old: (a, z) => a.created - z.created,
       top: (a, z) => score(z) - score(a) || z.created - a.created,
     };
-    roots.sort(by[sort]);
+    roots.sort((a, z) => Number(!!z.pinned) - Number(!!a.pinned) || by[sort](a, z));
     return { roots, kids, names };
   }, [list, sort]);
 
@@ -539,7 +554,7 @@ export function Comments({
   return (
     <section class="comments" id="comments" aria-labelledby="cm-h">
       <h2 id="cm-h">
-        {b.comments} <span>{total}</span>
+        {guest ? b.guestEntries : b.comments} <span>{total}</span>
       </h2>
 
       {closed ? (
@@ -575,7 +590,7 @@ export function Comments({
       ) : list === null ? (
         <p class="muted">{b.loading}</p>
       ) : roots.length === 0 ? (
-        <p class="muted">{b.noComments}</p>
+        <p class="muted">{guest ? b.guestEmpty : b.noComments}</p>
       ) : (
         <ul class="cl">{roots.map((c) => node(c, 0))}</ul>
       )}

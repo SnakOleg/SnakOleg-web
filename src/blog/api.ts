@@ -28,6 +28,7 @@ export type Cmt = {
   pending: boolean;
   created: number;
   edited: number | null;
+  pinned?: boolean;
   own: boolean;
   reactions: Reactions;
   mine: string[];
