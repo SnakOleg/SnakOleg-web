@@ -94,6 +94,10 @@ export const eraseUser = (env: Env, id: string) =>
     env.DB.prepare("UPDATE comments SET status='deleted', body='' WHERE user_id=?").bind(id),
     env.DB.prepare("DELETE FROM reactions WHERE user_id=?").bind(id),
     env.DB.prepare("DELETE FROM reports WHERE user_id=?").bind(id),
+    env.DB.prepare("DELETE FROM stamps WHERE user_id=?").bind(id),
+    env.DB.prepare("DELETE FROM games WHERE user_id=?").bind(id),
+    env.DB.prepare("DELETE FROM garden WHERE user_id=?").bind(id),
+    env.DB.prepare("DELETE FROM capsules WHERE user_id=?").bind(id),
     env.DB.prepare("DELETE FROM users WHERE id=?").bind(id),
   ]);
 

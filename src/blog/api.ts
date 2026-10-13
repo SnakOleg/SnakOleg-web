@@ -29,6 +29,7 @@ export type Cmt = {
   created: number;
   edited: number | null;
   pinned?: boolean;
+  card?: { icon: string; c: string } | null;
   own: boolean;
   reactions: Reactions;
   mine: string[];
@@ -72,6 +73,7 @@ export const loginUrl = (back = location.pathname + location.search) =>
   DEMO ? "#demo-login" : `/api/auth/login?mode=user&return=${encodeURIComponent(back)}`;
 
 let me: Me | null = null;
+export const currentMe = () => me;
 let pending: Promise<void> | null = null;
 const subs = new Set<(m: Me | null) => void>();
 const publish = (m: Me | null) => {

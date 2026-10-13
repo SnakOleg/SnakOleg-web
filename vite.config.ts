@@ -54,7 +54,7 @@ function siteFiles(): Plugin {
       this.emitFile({
         type: "asset",
         fileName: "sitemap.xml",
-        source: `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${siteUrl}/</loc><lastmod>${today}</lastmod></url>\n  <url><loc>${siteUrl}/uses</loc><lastmod>${today}</lastmod></url>\n  <url><loc>${siteUrl}/blog</loc><lastmod>${today}</lastmod></url>\n</urlset>\n`,
+        source: `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${siteUrl}/</loc><lastmod>${today}</lastmod></url>\n  <url><loc>${siteUrl}/uses</loc><lastmod>${today}</lastmod></url>\n  <url><loc>${siteUrl}/blog</loc><lastmod>${today}</lastmod></url>\n  <url><loc>${siteUrl}/games</loc><lastmod>${today}</lastmod></url>\n</urlset>\n`,
       });
     },
   };
@@ -77,12 +77,15 @@ export default defineConfig({
                   ? "uses.html"
                   : process.env.PAGE === "blog"
                     ? "blog.html"
-                    : "index.html",
+                    : process.env.PAGE === "games"
+                      ? "games.html"
+                      : "index.html",
               )
             : {
                 main: resolve(__dirname, "index.html"),
                 uses: resolve(__dirname, "uses.html"),
                 blog: resolve(__dirname, "blog.html"),
+                games: resolve(__dirname, "games.html"),
                 admin: resolve(__dirname, "admin.html"),
               },
         },

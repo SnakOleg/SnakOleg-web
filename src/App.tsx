@@ -11,6 +11,7 @@ import { GitHubActivity } from "./components/GitHubActivity";
 import { Projects } from "./components/projects/Projects";
 import { Timeline } from "./components/timeline/Timeline";
 import { BlogPreview } from "./components/BlogPreview";
+import { VisitorMap } from "./components/VisitorMap";
 import { Skills } from "./components/Skills";
 
 export function App({ preview = false }: { preview?: boolean }) {
@@ -36,6 +37,7 @@ export function App({ preview = false }: { preview?: boolean }) {
           <GitHubActivity l={l} />
           <Projects l={l} />
           <BlogPreview l={l} />
+          <VisitorMap l={l} />
           <Timeline l={l} gh={gh} />
           <Skills l={l} />
         </>

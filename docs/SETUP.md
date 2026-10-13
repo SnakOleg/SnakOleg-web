@@ -67,6 +67,27 @@ Run the same command after pulling updates that add files to `migrations/`.
 5. Settings, Variables and Secrets: add the four variables from the table above for the Production environment, then redeploy.
 6. Open `/admin` and sign in.
 
+## 4.1 Live presence (online counter and cursors)
+
+The counter and the cursors run in a small separate Worker with a Durable Object (`realtime/`). It works on the free plan. The Worker has no public address: the site talks to it only through the `LIVE` binding in `/api/live`, which checks that the request comes from your own domain.
+
+Do this once, before the site deploy that includes this feature:
+
+```bash
+npx wrangler login
+npm run live:deploy
+```
+
+Then make sure the Pages project has the binding. `wrangler.toml` already declares it, and Pages reads it on the next deploy. If the dashboard still shows no binding: Pages project, Settings, Bindings, Add, Durable Object, variable name `LIVE`, namespace `snak-live` / `Live`. Redeploy after adding it.
+
+Without the Worker the site keeps working: the counter just does not appear.
+
+Local run: start `npx wrangler dev -c realtime/wrangler.toml` in a second terminal next to `npm run dev:api`. Wrangler connects them on its own (it prints `env.LIVE ... [connected]`).
+
+Run `npm run live:deploy` again only when files in `realtime/` change.
+
+Visitors can hide the cursors from the counter popup at the bottom left. Hidden cursors also stop sending theirs. Touch screens only get the counter.
+
 ## 5. Local development with the dashboard
 
 ```bash
@@ -153,6 +174,27 @@ The blog lives at `/blog` (a short preview with a button is shown on the home pa
 - **Bans**: scope is blog, themes or everything, for 1, 7 or 30 days or forever, with a reason shown to the person together with your contact (@The_Nikeri) so they can write to you. The "Темы" page also has a "Заблокировать автора" button.
 - With `TG_BOT_TOKEN` set you get a Telegram message about new comments that need your attention. Without it nothing is sent.
 
+## Terminal and passport stamps
+
+The terminal (`key or the`>_`button in the footer) lives in`src/terminal/`: `commands.ts`has the commands,`fs.ts`the small fake file system,`text.ts`the Russian and English output. To add an easter egg, give it an entry in`shared/stamps.ts`and call`found("id")`from the place that triggers it. The migration`0009`creates the`stamps` table. Stamps for countries (`c:RU`) and holidays (`s:newyear:2027`) are not listed there: the server hands out the country stamp when the signed-in visitor opens the passport, and accepts a holiday stamp only on the days of that holiday.
+
+## Map, postcards, games, garden and capsules
+
+- **Visitors map.** `GET /api/map` returns visits per country (from the existing statistics) and postcards per country. The country shapes are in `src/assets/map/world.json`, generated once by `node scripts/make-map.mjs` and loaded lazily. Migration `0010` adds the `card` column to comments.
+- **Postcards.** A guestbook entry can carry one of eight stamps from `shared/cards.ts`. The sender's country (Cloudflare reports it) is printed on the stamp and also earns the passport a `postcard` stamp and the country stamp.
+- **Word of the day and reaction test.** Migration `0011` adds `games`. The word is picked on the server from `shared/words.ts` (one word per Moscow day) and the browser only sees the colours of each guess, so the answer is never in the bundle. Extend the list in `shared/words.ts` before it repeats. The reaction test asks the server for a start token and refuses results that are faster than 90 ms or impossible for the elapsed time. The leaderboard shows the best time per signed-in visitor.
+- **Game pages.** `/games` is the hub and `/games/word`, `/games/reaction`, `/games/garden` and `/games/capsule` are separate pages of one shell (`games.html`, routed by `functions/games/[[path]].ts`).
+- **Garden and capsules.** Migrations `0012` and `0013` add `garden` (with watering gifts from other visitors, five a day) and `capsules`. A plant grows one stage per day (four days to bloom). A capsule keeps its text on the server and only returns it after the date; up to three can wait at once, from an hour to five years ahead.
+- **Status from the bot.** Set a webhook secret and point Telegram at the site (once):
+
+```bash
+npx wrangler pages secret put BOT_SECRET
+curl "https://api.telegram.org/bot<TG_BOT_TOKEN>/setWebhook" \
+  -d "url=https://YOUR-DOMAIN/api/bot" -d "secret_token=<the same BOT_SECRET>"
+```
+
+Then write `/now` to the bot: it answers with a menu of statuses (`shared/now.ts`), and `/now some text` sets a free one. `/clear` removes it. Only the ids in `ADMIN_TG_ID` are heard. A status disappears from the site after 12 hours.
+
 ## Announcements
 
 Dashboard, Контент, Объявления: a centered notice or a running line (бегущая строка) at the top of every page, with colors, dates and the option to dismiss.
@@ -163,4 +205,4 @@ The customizer has a font switcher (the fonts are bundled, no external hosts). T
 
 ## Themes from visitors
 
-Suggestions arrive through `POST /api/presets` and wait in the `presets` table until you approve them on the "Темы" page. The text is cleaned (no markup), the colors are checked for contrast on the server too, and exact duplicates are refused. Accepting can be switched off in Content, Оформление ("Принимать темы от посетителей"). Approved themes are cached for a few minutes. Suggesting a theme requires a Telegram sign-in, so you can block abusers per person (see "Community" below). The migrations `0003` to `0008` (history notes, click limits, presets, blog, community, replies and pinned comments) are applied by `npm run db:migrate`.
+Suggestions arrive through `POST /api/presets` and wait in the `presets` table until you approve them on the "Темы" page. The text is cleaned (no markup), the colors are checked for contrast on the server too, and exact duplicates are refused. Accepting can be switched off in Content, Оформление ("Принимать темы от посетителей"). Approved themes are cached for a few minutes. Suggesting a theme requires a Telegram sign-in, so you can block abusers per person (see "Community" below). The migrations `0003` to `0013` (history notes, click limits, presets, blog, community, replies, pinned comments, passport stamps, postcards, games, garden, capsules and garden gifts) are applied by `npm run db:migrate`.

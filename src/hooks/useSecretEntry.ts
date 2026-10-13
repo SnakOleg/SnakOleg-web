@@ -1,4 +1,5 @@
 import { useEffect } from "preact/hooks";
+import { inDialog } from "../lib/modal";
 
 const WORD = "admin";
 const open = () => location.assign("/admin");
@@ -9,7 +10,7 @@ export function useSecretEntry() {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
       if (target?.closest("input, textarea, select, [contenteditable]")) return;
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.metaKey || e.ctrlKey || e.altKey || inDialog()) return;
       typed = (typed + e.key.toLowerCase()).slice(-WORD.length);
       if (typed === WORD) open();
     };

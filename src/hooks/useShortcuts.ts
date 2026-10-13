@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "preact/hooks";
+import { inDialog } from "../lib/modal";
 
 type Actions = { theme: () => void; lang: () => void };
 
@@ -9,7 +10,7 @@ export function useShortcuts(actions: Actions) {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.metaKey || e.ctrlKey || e.altKey || inDialog()) return;
       if ((e.target as HTMLElement | null)?.closest("input, textarea, select, [contenteditable]")) return;
       const key = e.key.toLowerCase();
       if (key === "t" || key === "е") latest.current.theme();

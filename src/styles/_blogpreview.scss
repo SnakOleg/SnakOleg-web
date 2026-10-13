@@ -33,6 +33,10 @@
       background: color-mix(in srgb, var(--acc) 12%, transparent);
     }
   }
+  .bpnone {
+    margin: 0 0 1rem;
+    color: var(--mut);
+  }
   .bpl {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

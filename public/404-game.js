@@ -1,4 +1,9 @@
 (() => {
+  try {
+    localStorage.setItem("snak-lost", "1");
+  } catch {
+    // storage can be blocked
+  }
   const canvas = document.getElementById("game");
   if (!canvas) return;
   const ctx = canvas.getContext("2d");

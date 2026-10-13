@@ -37,3 +37,28 @@
     }
   }
 }
+
+.foot .fb2 > span {
+  display: inline-flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.foot .nowb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  justify-content: center;
+  margin: 0.8rem 0 0;
+  color: var(--mut);
+  font-size: 0.9rem;
+
+  b {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  time {
+    opacity: 0.7;
+  }
+}

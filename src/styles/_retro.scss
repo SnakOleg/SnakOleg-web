@@ -494,3 +494,10 @@ html.retro {
     animation: r-blink 1.2s steps(2) infinite;
   }
 }
+
+.retro .foot .mark text {
+  font-size: 112px;
+  fill: var(--acc2);
+  mask: none;
+  filter: drop-shadow(0 0 8px var(--acc2));
+}

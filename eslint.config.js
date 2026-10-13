@@ -3,7 +3,7 @@ import tseslint from "typescript-eslint";
 export default tseslint.config(
   { ignores: ["dist", "dist-demo", ".wrangler", "node_modules"] },
   {
-    files: ["src/**/*.{ts,tsx}", "functions/**/*.ts", "shared/**/*.ts", "tests/**/*.ts"],
+    files: ["src/**/*.{ts,tsx}", "functions/**/*.ts", "shared/**/*.ts", "tests/**/*.ts", "realtime/**/*.ts"],
     extends: [tseslint.configs.base],
     languageOptions: {
       parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname },

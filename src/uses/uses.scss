@@ -20,18 +20,18 @@
     width: 34rem;
     height: 34rem;
     border-radius: 50%;
-    filter: blur(70px);
+    background: radial-gradient(closest-side, var(--blob), transparent);
     opacity: 0.4;
     animation: aur 18s ease-in-out infinite alternate;
     &:nth-child(1) {
       left: 12%;
       top: -8rem;
-      background: var(--acc);
+      --blob: var(--acc);
     }
     &:nth-child(2) {
       right: 8%;
       top: -4rem;
-      background: var(--acc2);
+      --blob: var(--acc2);
       animation-duration: 23s;
     }
     &:nth-child(3) {
@@ -39,7 +39,7 @@
       top: 4rem;
       width: 24rem;
       height: 24rem;
-      background: color-mix(in srgb, var(--acc) 50%, var(--acc2));
+      --blob: color-mix(in srgb, var(--acc) 50%, var(--acc2));
       animation-duration: 27s;
       opacity: 0.28;
     }

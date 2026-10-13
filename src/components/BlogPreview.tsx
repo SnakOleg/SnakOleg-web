@@ -7,13 +7,13 @@ import { Ico } from "./ui/Icon";
 
 export function BlogPreview({ l }: { l: L }) {
   const b = strings(l);
-  const [posts, setPosts] = useState<PostBrief[]>([]);
+  const [posts, setPosts] = useState<PostBrief[] | null>(null);
   useEffect(() => {
     void api<{ posts: PostBrief[] }>("/api/blog/posts").then((r) => {
-      if (r.ok && Array.isArray(r.data.posts)) setPosts(r.data.posts.slice(0, 3));
+      setPosts(r.ok && Array.isArray(r.data.posts) ? r.data.posts.slice(0, 3) : []);
     });
   }, []);
-  if (!posts.length) return null;
+  if (!posts) return null;
   return (
     <section class="bp" aria-labelledby="bp-h">
       <div class="bph">
@@ -24,6 +24,7 @@ export function BlogPreview({ l }: { l: L }) {
           {b.openBlog} <Ico n="arrow-right" />
         </a>
       </div>
+      {posts.length === 0 && <p class="bpnone">{b.soon}</p>}
       <ul class="bpl">
         {posts.map((p) => (
           <li>

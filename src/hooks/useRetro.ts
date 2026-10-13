@@ -1,4 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
+import { found } from "../stamps/client";
 
 const KEY = "snak-retro";
 const CODE = [
@@ -25,6 +26,7 @@ export function useRetro() {
 
   useEffect(() => {
     document.documentElement.classList.toggle("retro", retro);
+    if (retro) found("retro");
     try {
       localStorage.setItem(KEY, retro ? "1" : "0");
     } catch {
@@ -40,6 +42,7 @@ export function useRetro() {
       step = key === CODE[step] ? step + 1 : key === CODE[0] ? 1 : 0;
       if (step === CODE.length) {
         step = 0;
+        found("konami");
         setRetro((on) => !on);
       }
     };

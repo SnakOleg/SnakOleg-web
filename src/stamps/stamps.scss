@@ -1,0 +1,342 @@
+.inkdefs {
+  position: absolute;
+  pointer-events: none;
+}
+
+.stamp {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  color: hsl(var(--sh) 62% 52%);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition:
+    rotate 0.3s,
+    scale 0.3s;
+
+  .thin {
+    stroke-width: 1.3;
+  }
+  .dash {
+    stroke-dasharray: 3 3;
+  }
+  .perf {
+    stroke-width: 3.8;
+    stroke-dasharray: 0 6.2;
+  }
+  .wave {
+    stroke-width: 2;
+  }
+  .none {
+    stroke: none;
+  }
+  .fl {
+    fill: currentColor;
+  }
+  .ghost {
+    color: hsl(calc(var(--sh) + 40) 80% 62%);
+    opacity: 0.35;
+    translate: 1.6px 1.2px;
+  }
+  text {
+    fill: currentColor;
+    stroke: none;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    font-family: ui-monospace, "JetBrains Mono", monospace;
+    font-weight: 800;
+    user-select: none;
+  }
+  .ring {
+    text-anchor: start;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .lb {
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+  &.locked {
+    color: var(--mut);
+    opacity: 0.4;
+    rotate: 0deg;
+
+    .ink {
+      stroke-dasharray: 5 4;
+    }
+    .perf,
+    .thin,
+    .wave {
+      stroke-dasharray: none;
+    }
+  }
+}
+
+.stoast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 5rem);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.55rem 1.1rem 0.55rem 0.7rem;
+  color: var(--ink);
+  text-align: left;
+  background: var(--surf);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+  cursor: pointer;
+  transform: translateX(-50%);
+  animation: stoast-in 0.5s cubic-bezier(0.2, 1.3, 0.4, 1);
+
+  .stamp {
+    width: 3.6rem;
+    animation: stoast-hit 0.5s 0.2s cubic-bezier(0.2, 1.4, 0.4, 1) backwards;
+  }
+  span {
+    display: grid;
+    gap: 0.1rem;
+  }
+  small {
+    color: var(--mut);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  b {
+    font-size: 0.95rem;
+  }
+}
+
+@keyframes stoast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 1.2rem);
+  }
+}
+@keyframes stoast-hit {
+  from {
+    opacity: 0;
+    scale: 2.2;
+  }
+}
+
+.pback {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(0 0 0 / 0.55);
+  backdrop-filter: blur(4px);
+}
+
+.ppass {
+  width: min(44rem, 100%);
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 1.3rem 1.4rem 1.6rem;
+  color: var(--ink);
+  background: var(--surf);
+  border: 1px solid var(--line);
+  border-radius: 1.2rem;
+
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+
+    h2 {
+      margin: 0;
+      font: 700 1.3rem var(--f-head);
+    }
+    p {
+      margin: 0.25rem 0 0;
+      color: var(--mut);
+      font-size: 0.9rem;
+    }
+  }
+  .pclose {
+    width: 2rem;
+    height: 2rem;
+    color: var(--mut);
+    font-size: 1.4rem;
+    line-height: 1;
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--ink);
+    }
+  }
+  .pnote {
+    margin: 0.9rem 0 0;
+    padding: 0.6rem 0.8rem;
+    color: var(--mut);
+    font-size: 0.85rem;
+    background: color-mix(in srgb, var(--acc) 8%, transparent);
+    border-radius: 0.6rem;
+
+    a {
+      color: var(--acc);
+      text-decoration: underline;
+    }
+  }
+  h3 {
+    margin: 1.4rem 0 0.7rem;
+    color: var(--mut);
+    font:
+      600 0.72rem ui-monospace,
+      monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .pnone {
+    margin: 0;
+    color: var(--mut);
+    font-size: 0.9rem;
+  }
+}
+
+.pgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7.2rem, 1fr));
+  gap: 1rem 0.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  .pcell {
+    display: grid;
+    justify-items: center;
+    gap: 0.25rem;
+    width: 100%;
+    padding: 0.2rem;
+    color: inherit;
+    font: inherit;
+    text-align: center;
+    background: none;
+    border: 0;
+    border-radius: 0.8rem;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--acc);
+    }
+  }
+  .stamp {
+    width: 5.8rem;
+  }
+  .got:hover .stamp {
+    rotate: 0deg;
+    scale: 1.08;
+  }
+  b {
+    font-size: 0.82rem;
+  }
+  small {
+    color: var(--mut);
+    font-size: 0.72rem;
+    line-height: 1.3;
+  }
+  .lock b {
+    color: var(--mut);
+  }
+}
+
+.foot .passbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--acc);
+  }
+}
+
+.pfocus {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: rgb(0 0 0 / 0.35);
+  backdrop-filter: blur(12px);
+  cursor: zoom-out;
+  animation: pf-in 0.35s ease-out both;
+
+  &.out {
+    animation: pf-in 0.3s ease-in reverse both;
+  }
+  figure {
+    display: grid;
+    justify-items: center;
+    gap: 1rem;
+    max-width: 24rem;
+    margin: 0;
+    text-align: center;
+  }
+  .pbig {
+    width: min(17rem, 62vw);
+    filter: drop-shadow(0 18px 30px rgb(0 0 0 / 0.35));
+  }
+  figcaption {
+    display: grid;
+    gap: 0.4rem;
+    color: #fff;
+    animation: pf-text 0.5s 0.3s ease-out both;
+
+    b {
+      font: 700 1.5rem var(--f-head);
+    }
+    span {
+      color: rgb(255 255 255 / 0.82);
+      font-size: 1rem;
+      line-height: 1.45;
+    }
+    small {
+      justify-self: center;
+      padding: 0.2rem 0.8rem;
+      color: rgb(255 255 255 / 0.8);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid rgb(255 255 255 / 0.4);
+      border-radius: 999px;
+
+      &.ok {
+        color: #bdf5cf;
+        border-color: #bdf5cf;
+      }
+    }
+  }
+}
+@keyframes pf-in {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+}
+@keyframes pf-text {
+  from {
+    opacity: 0;
+    transform: translateY(0.8rem);
+  }
+}

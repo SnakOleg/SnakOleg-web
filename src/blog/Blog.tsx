@@ -12,6 +12,7 @@ import { Comments } from "./Comments";
 import { EditorHost } from "./Editor";
 import { PostCard, PostMenu, Reactions, Share, Views } from "./parts";
 import { dateOf, strings } from "./strings";
+import { found } from "../stamps/client";
 import { Account, AskHost, Avatar, Link, Toasts, go, openEditor, usePath, useRefresh } from "./ui";
 import { useMe } from "./api";
 import avatarCat from "../assets/illustrations/avatar-cat.svg";
@@ -265,6 +266,20 @@ function PostPage({ id, l }: { id: number; l: L }) {
   useEffect(() => {
     if (data && location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView();
   }, [data]);
+
+  useEffect(() => {
+    const end = document.querySelector(".art-post .pf");
+    if (!data || !end || data.post.body.length < 600) return;
+    const since = Date.now();
+    let seen = false;
+    const watch = new IntersectionObserver(([hit]) => (seen = hit.isIntersecting));
+    watch.observe(end);
+    const timer = window.setInterval(() => seen && Date.now() - since > 15_000 && found("reader"), 2000);
+    return () => {
+      watch.disconnect();
+      clearInterval(timer);
+    };
+  }, [data?.post.id]);
 
   if (missing)
     return (

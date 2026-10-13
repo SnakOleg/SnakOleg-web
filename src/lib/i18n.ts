@@ -1,4 +1,4 @@
-import type { T } from "../config";
+import type { T } from "../config/i18n";
 
 export type L = "ru" | "en";
 

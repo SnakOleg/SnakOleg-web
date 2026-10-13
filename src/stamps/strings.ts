@@ -1,0 +1,41 @@
+import type { L } from "../lib/i18n";
+
+const ru = {
+  title: "Паспорт посетителя",
+  newStamp: "Новый штамп",
+  open: "Открыть паспорт",
+  close: "Закрыть",
+  count: (n: number, all: number) => `${n} из ${all}`,
+  finds: "Находки",
+  actions: "Дела",
+  countries: "Страны",
+  seasons: "Праздники",
+  locked: "???",
+  saved: "Штампы сохраняются на твоём аккаунте.",
+  guest: "Штампы лежат в этом браузере. Войди через Telegram, и они останутся с тобой на любом устройстве.",
+  login: "Войти через Telegram",
+  nothing: "Пока пусто",
+  owned: "Получен",
+  notYet: "Ещё не найден",
+  footer: "Паспорт",
+};
+const en: typeof ru = {
+  title: "Visitor passport",
+  newStamp: "New stamp",
+  open: "Open the passport",
+  close: "Close",
+  count: (n, all) => `${n} of ${all}`,
+  finds: "Finds",
+  actions: "Deeds",
+  countries: "Countries",
+  seasons: "Holidays",
+  locked: "???",
+  saved: "Your stamps are saved to your account.",
+  guest: "Stamps are kept in this browser. Sign in with Telegram to keep them on any device.",
+  login: "Sign in with Telegram",
+  nothing: "Nothing yet",
+  owned: "Collected",
+  notYet: "Not found yet",
+  footer: "Passport",
+};
+export const stampStrings = (l: L) => (l === "ru" ? ru : en);

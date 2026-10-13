@@ -41,6 +41,16 @@
     accent-color: var(--acc);
   }
 }
+.wxsel {
+  width: 100%;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--surf2);
+  color: var(--ink);
+  font: 600 0.8rem var(--f-body);
+  cursor: pointer;
+}
 .seg {
   display: flex;
   gap: 0.3rem;

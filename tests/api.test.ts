@@ -4,6 +4,7 @@ import type { ChildProcess } from "node:child_process";
 import { createHmac } from "node:crypto";
 import { existsSync, rmSync } from "node:fs";
 import { after, before, test } from "node:test";
+import { dayNumber, score, wordOf } from "../shared/words";
 
 const PORT = 8799;
 const BASE = `http://127.0.0.1:${PORT}`;
@@ -138,6 +139,10 @@ before(async () => {
       "TG_CLIENT_ID=123456",
       "--binding",
       "TG_CLIENT_SECRET=secret",
+      "--binding",
+      "BOT_SECRET=bot-secret-0123456789",
+      "--binding",
+      "TG_BOT_TOKEN=0:test",
     ],
     { stdio: ["ignore", "pipe", "pipe"], detached: true },
   );
@@ -172,6 +177,180 @@ test("the dashboard API refuses strangers", async () => {
   assert.equal((await call("/api/auth/me", { headers: { Cookie: cookie("sid-main", "999") } })).status, 401);
   assert.equal((await call("/api/auth/me", { headers: { Cookie: cookie("no-such-session") } })).status, 401);
   assert.equal((await call("/api/auth/me", { headers: admin() })).body.name, "Test");
+});
+
+test("live presence only accepts websocket upgrades", async () => {
+  assert.equal((await call("/api/live")).status, 426);
+});
+
+test("passport stamps: only found eggs and the current season are accepted from the browser", async () => {
+  const save = (as: string, codes: unknown) =>
+    call("/api/stamps", { method: "POST", headers: visitor(as), body: JSON.stringify({ codes }) });
+  assert.equal((await call("/api/stamps", { method: "POST", body: "{}" })).status, 403);
+  assert.equal(
+    (await call("/api/stamps", { method: "POST", headers: { ...visitor("7001"), Cookie: "" }, body: "{}" }))
+      .status,
+    401,
+  );
+  assert.deepEqual((await call("/api/stamps")).body.stamps, []);
+  const r = await save("7001", [
+    "terminal",
+    "sudo",
+    "guest",
+    "word7",
+    "c:RU",
+    "s:newyear:2001",
+    5,
+    "terminal",
+  ]);
+  assert.equal(r.status, 200);
+  assert.deepEqual(r.body.added.sort(), ["sudo", "terminal"]);
+  const mine = (await call("/api/stamps", { headers: visitor("7001") })).body.stamps.map(
+    (x: { code: string }) => x.code,
+  );
+  assert.ok(mine.includes("terminal") && mine.includes("sudo") && !mine.includes("guest"));
+  assert.deepEqual(
+    (await call("/api/stamps", { headers: visitor("7004") })).body.stamps.filter(
+      (x: { code: string }) => !x.code.startsWith("c:"),
+    ),
+    [],
+  );
+});
+
+test("games: the word is checked on the server and the reaction test needs a real round", async () => {
+  const day = dayNumber();
+  const answer = wordOf(day);
+  assert.equal(score(answer, answer), "ggggg");
+  assert.equal(score("аабба", "баааа"), "ygybg");
+  const state = (await call("/api/game?kind=word")).body;
+  assert.equal(state.day, day);
+  assert.equal(state.streak, 0);
+  assert.equal((await call("/api/game?kind=word&g=abc")).status, 400);
+  const miss = await call("/api/game?kind=word&g=ааааа&n=1");
+  assert.equal(miss.status, 200);
+  assert.equal(miss.body.answer, undefined);
+  const hit = await call(`/api/game?kind=word&g=${encodeURIComponent(answer)}&n=2`);
+  assert.equal(hit.body.p, "ggggg");
+  assert.equal(hit.body.answer, answer);
+
+  const play = (as: string, data: object) =>
+    call("/api/game", { method: "POST", headers: visitor(as), body: JSON.stringify(data) });
+  assert.equal((await call("/api/game", { method: "POST", body: "{}" })).status, 403);
+  assert.equal((await play("7001", { kind: "word", day: day - 1, tries: 3, won: true })).status, 400);
+  const won = await play("7001", { kind: "word", day, tries: 3, won: true });
+  assert.equal(won.body.streak, 1);
+  assert.deepEqual(won.body.added, ["word"]);
+  const owned = (await call("/api/stamps", { headers: visitor("7001") })).body.stamps.map(
+    (x: { code: string }) => x.code,
+  );
+  assert.ok(owned.includes("word") && !owned.includes("word7"));
+
+  const board = (await call("/api/game?kind=quick", { headers: visitor("7001") })).body;
+  assert.equal(typeof board.t, "number");
+  assert.equal((await play("7001", { kind: "quick", ms: 40, t: Date.now() - 5000 })).status, 400);
+  assert.equal((await play("7001", { kind: "quick", ms: 200, t: Date.now() })).status, 400);
+  const fast = await play("7001", { kind: "quick", ms: 200, t: Date.now() - 3000 });
+  assert.deepEqual(fast.body.added, ["quick"]);
+  const slow = await play("7001", { kind: "quick", ms: 400, t: Date.now() - 3000 });
+  assert.equal(slow.body.best, 200);
+  const after = (await call("/api/game?kind=quick")).body;
+  assert.equal(after.top[0].ms, 200);
+});
+
+test("bot status: only the owner can set it, presets and free text both work", async () => {
+  assert.equal((await call("/api/now")).body.now, null);
+  const hook = (secret: string | null, update: object) =>
+    call("/api/bot", {
+      method: "POST",
+      headers: secret ? { "X-Telegram-Bot-Api-Secret-Token": secret } : {},
+      body: JSON.stringify(update),
+    });
+  const press = (from: number, data: string) => ({
+    callback_query: { id: "1", data, from: { id: from }, message: { chat: { id: from }, message_id: 1 } },
+  });
+  assert.equal((await hook(null, press(Number(OWNER), "now:code"))).status, 403);
+  assert.equal((await hook("wrong", press(Number(OWNER), "now:code"))).status, 403);
+  await hook("bot-secret-0123456789", press(1, "now:code"));
+  assert.equal((await call("/api/now")).body.now, null);
+  await hook("bot-secret-0123456789", press(Number(OWNER), "now:code"));
+  assert.equal((await call("/api/now")).body.now.ru, "Пишу код");
+  await hook("bot-secret-0123456789", {
+    message: { text: "/now гуляю с котом", chat: { id: 1 }, from: { id: Number(OWNER) } },
+  });
+  assert.equal((await call("/api/now")).body.now.ru, "гуляю с котом");
+  await hook("bot-secret-0123456789", press(Number(OWNER), "now:clear"));
+  assert.equal((await call("/api/now")).body.now, null);
+});
+
+test("garden and time capsules: one plant a day, sealed text stays on the server", async () => {
+  const send = (path: string, as: string, data: object) =>
+    call(path, { method: "POST", headers: visitor(as), body: JSON.stringify(data) });
+  assert.equal((await call("/api/garden", { method: "POST", body: "{}" })).status, 403);
+  assert.equal((await send("/api/garden", "7001", { action: "plant", kind: "weed" })).status, 400);
+  assert.equal((await send("/api/garden", "7001", { action: "water" })).status, 400);
+  const planted = await send("/api/garden", "7001", { action: "plant", kind: "tulip" });
+  assert.equal(planted.status, 201);
+  assert.equal((await send("/api/garden", "7001", { action: "plant", kind: "cactus" })).status, 400);
+  const water = await send("/api/garden", "7001", { action: "water" });
+  assert.equal(water.body.mine.stage, 1);
+  assert.equal(water.body.mine.can, false);
+  assert.equal((await send("/api/garden", "7001", { action: "water" })).status, 409);
+  const garden = (await call("/api/garden", { headers: visitor("7001") })).body;
+  assert.equal(garden.plants.length, 1);
+  assert.equal(garden.plants[0].own, true);
+  assert.equal((await call("/api/garden")).body.plants[0].own, false);
+
+  const peer = (await call("/api/garden", { headers: visitor("7001") })).body.plants[0];
+  assert.equal(
+    (await send("/api/garden", "7001", { action: "gift", target: peer.id })).status,
+    400,
+    "no gifts to yourself",
+  );
+  assert.equal((await send("/api/garden", "7004", { action: "plant", kind: "cactus" })).status, 201);
+  assert.equal((await send("/api/garden", "7004", { action: "gift", target: "7001" })).status, 200);
+  assert.equal((await send("/api/garden", "7004", { action: "gift", target: "no-such" })).status, 404);
+  assert.equal((await call("/api/garden")).body.plants.find((p: { id: string }) => p.id === "7001").gifts, 1);
+
+  const day = 86_400_000;
+  const seal = (as: string, data: object) => send("/api/capsule", as, data);
+  assert.equal((await seal("7001", { body: "Привет себе", opens: Date.now() + 60_000 })).status, 400);
+  assert.equal((await seal("7001", { body: "", opens: Date.now() + 2 * day })).status, 400);
+  assert.equal((await seal("7001", { body: "x".repeat(501), opens: Date.now() + 2 * day })).status, 413);
+  const made = await seal("7001", { body: "Привет себе из прошлого", opens: Date.now() + 2 * day });
+  assert.equal(made.status, 201);
+  const mine = (await call("/api/capsule", { headers: visitor("7001") })).body;
+  assert.equal(mine.mine[0].body, undefined);
+  assert.equal(mine.vault.length, 1);
+  assert.equal(mine.total, 1);
+  assert.ok(!JSON.stringify((await call("/api/capsule")).body).includes("Привет себе"));
+  assert.equal((await seal("7001", { open: made.body.capsule.id })).status, 403);
+  assert.equal((await seal("7004", { open: made.body.capsule.id })).status, 404);
+  sql(`UPDATE capsules SET opens=${Date.now() - 1000} WHERE id=${made.body.capsule.id}`);
+  const opened = await seal("7001", { open: made.body.capsule.id });
+  assert.equal(opened.body.capsule.body, "Привет себе из прошлого");
+  assert.ok(opened.body.capsule.opened);
+  for (let i = 0; i < 3; i++) await seal("7004", { body: `Письмо ${i}`, opens: Date.now() + 3 * day });
+  assert.equal((await seal("7004", { body: "Четвёртое", opens: Date.now() + 3 * day })).status, 409);
+  const stamps = (await call("/api/stamps", { headers: visitor("7001") })).body.stamps.map(
+    (x: { code: string }) => x.code,
+  );
+  assert.ok(stamps.includes("gardener") && stamps.includes("capsule"));
+});
+
+test("game pages share one shell and unknown games are 404", async () => {
+  for (const path of ["/games", "/games/word", "/games/reaction", "/games/garden", "/games/capsule"]) {
+    const res = await request(path, {});
+    assert.equal(res.status, 200, path);
+    assert.match(await res.text(), /id="games"/);
+  }
+  assert.equal((await request("/games/snake", {})).status, 404);
+  assert.equal((await request("/games/word/extra", {})).status, 404);
+});
+
+test("weather answers with the current conditions or says it is unavailable", async () => {
+  const r = await call("/api/weather");
+  assert.ok([200, 503].includes(r.status));
+  if (r.status === 200) assert.equal(typeof r.body.code, "number");
 });
 
 test("writes need the same origin and the custom header", async () => {
@@ -397,7 +576,7 @@ test("the link checker is owner only and refuses internal addresses", async () =
 
 test("status reports what is configured", async () => {
   const status = (await call("/api/admin/status", { headers: admin() })).body;
-  assert.deepEqual(status.env, { telegram: true, secret: true, admin: true, notifications: false });
+  assert.deepEqual(status.env, { telegram: true, secret: true, admin: true, notifications: true });
 });
 
 test("theme suggestions need a sign-in and honour per-user limits and bans", async () => {
@@ -772,6 +951,34 @@ test("blog: the owner posts and moderates from the page, replies remember who th
   assert.equal(book.filter((c: { pinned: boolean }) => c.pinned).length, 1);
   assert.equal((await mod(OWNER, { action: "comment", comment: hello.id, to: "deleted" })).status, 200);
   assert.equal((await call("/api/blog/comments?post=0")).body.comments.length, 1);
+
+  const postcard = (as: string, data: object) =>
+    call("/api/blog/comments", {
+      method: "POST",
+      headers: visitor(as),
+      body: JSON.stringify({ post: 0, body: "Привет с открытки", ...data }),
+    });
+  const sent = await postcard("7001", { card: { icon: "sun" } });
+  assert.equal(sent.status, 201);
+  assert.equal(sent.body.comment.card.icon, "sun");
+  assert.equal((await postcard("7001", { card: { icon: "bomb" }, body: "Другая" })).status, 400);
+  assert.equal(
+    (await postcard("7001", { card: { icon: "star" }, parent: sent.body.comment.id })).status,
+    400,
+  );
+  assert.equal((await postcard("7001", { card: { icon: "star" }, body: "x".repeat(141) })).status, 413);
+  const withCard = (await call("/api/blog/comments?post=0")).body.comments;
+  assert.equal(withCard.find((c: { id: number }) => c.id === sent.body.comment.id).card.icon, "sun");
+  const plain = await call("/api/blog/comments", {
+    method: "POST",
+    headers: visitor("7004"),
+    body: JSON.stringify({ post: made.body.id, body: "Открытка к посту", card: { icon: "sun" } }),
+  });
+  assert.equal(plain.status, 400);
+  const map = await call("/api/map");
+  assert.equal(map.status, 200);
+  assert.equal(typeof map.body.visits, "object");
+  assert.equal(typeof map.body.cards, "object");
 
   const rep = await call("/api/blog/report", {
     method: "POST",

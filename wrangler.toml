@@ -11,3 +11,9 @@ binding = "DB"
 database_name = "snak-db"
 database_id = "69f5b912-fe71-4ccc-b3ae-08db4ad92e72"
 migrations_dir = "migrations"
+
+# Live presence (online counter and cursors). Deploy realtime/ first, see docs/SETUP.md.
+[[durable_objects.bindings]]
+name = "LIVE"
+class_name = "Live"
+script_name = "snak-live"

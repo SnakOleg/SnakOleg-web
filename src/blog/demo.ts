@@ -1,6 +1,7 @@
 // In-memory copy of the blog API, used by the preview build (VITE_BLOG_DEMO) so the blog can be tried without a server.
 import { COMMENT_MAX, EMOJI, MAX_REACTIONS_PER_TARGET, cleanText, excerptOf } from "../../shared/blog";
 import { isSpam, scoreComment } from "../../shared/spam";
+import { WORD_TRIES, dayNumber, normalize, score, validGuess, wordOf } from "../../shared/words";
 import type { Cmt, CUser, Me, PostFull } from "./api";
 
 const now = Date.now();
@@ -110,6 +111,7 @@ export async function onRequestGet({ env }: { env: Env }) {
 for (const p of posts) p.excerpt = excerptOf(p.body);
 
 let nextId = 100;
+const owned = new Set<string>(["guest"]);
 const store: Record<number, (Cmt & { post: number; text: string })[]> = {};
 const c = (post: number, id: number, user: CUser, text: string, ago: number, extra: Partial<Cmt> = {}) => {
   const v = scoreComment(text);
@@ -173,6 +175,7 @@ c(0, 12, OWNER, "Спасибо, что заглянули! Пишите, что
   reactions: { "❤️": 5 },
 });
 c(0, 13, DINA, "Привет из Питера!", 50 * H, { reactions: { "👍": 1 } });
+c(0, 14, CARL, "Привет из Берлина! Хорошего лета вам.", 70 * H, { card: { icon: "sun", c: "DE" } });
 
 const closeThread = (id: number, deleted: boolean) => {
   const all = Object.values(store).flat();
@@ -187,7 +190,7 @@ const closeThread = (id: number, deleted: boolean) => {
   for (const x of all) if (gone.has(x.id)) Object.assign(x, { deleted, body: "", user: null });
 };
 
-let user: CUser | null = null;
+let user: CUser | null = new URLSearchParams(location.search).has("as") ? GUEST : null;
 let banned = false;
 let last = 0;
 
@@ -208,6 +211,26 @@ export const demoBan = (on: boolean) => {
   banned = on;
 };
 
+const sealedDemo: number[] = [];
+let plant = null as { kind: string; stage: number; day: number } | null;
+const gardenList = () => [
+  ...(plant
+    ? [{ id: "9000", kind: plant.kind, stage: plant.stage, gifts: 0, name: "Гость демо", own: true }]
+    : []),
+  { id: "1", kind: "sunflower", stage: 4, gifts: 5, name: "Дина", own: false },
+  { id: "2", kind: "tulip", stage: 3, gifts: 0, name: "Карл", own: false },
+  { id: "3", kind: "cactus", stage: 2, gifts: 1, name: "Alice", own: false },
+  { id: "4", kind: "tree", stage: 1, gifts: 0, name: "Bob", own: false },
+  { id: "5", kind: "mushroom", stage: 4, gifts: 0, name: "Snak", own: false },
+  { id: "6", kind: "tulip", stage: 4, gifts: 2, name: "Мария", own: false },
+  { id: "7", kind: "tree", stage: 3, gifts: 0, name: "Иван", own: false },
+  { id: "8", kind: "cactus", stage: 4, gifts: 0, name: "Лена", own: false },
+  { id: "10", kind: "sunflower", stage: 2, gifts: 0, name: "Макс", own: false },
+  { id: "11", kind: "mushroom", stage: 1, gifts: 0, name: "Оля", own: false },
+];
+const gardenMine = () =>
+  plant ? { kind: plant.kind, stage: plant.stage, can: plant.stage < 4 && plant.day !== 1 } : null;
+
 export function demoApi(path: string, method: string, body?: any) {
   const url = new URL(path, "http://x");
   const p = url.pathname;
@@ -226,6 +249,50 @@ export function demoApi(path: string, method: string, body?: any) {
       settings: { commentsOpen: true, slowMode: 3, themesOpen: true },
     };
     return ok(me);
+  }
+  if (p === "/api/now")
+    return ok({ now: { icon: "💻", ru: "Пишу код", en: "Writing code", ts: Date.now() - 20 * 60_000 } });
+  if (p === "/api/garden" && method === "GET") return ok({ plants: gardenList(), mine: gardenMine() });
+  if (p === "/api/capsule" && method === "GET")
+    return ok({
+      vault: [
+        { opens: Date.now() + 9 * 86_400_000, name: "Дина" },
+        { opens: Date.now() + 40 * 86_400_000, name: "Карл" },
+        { opens: Date.now() - 1000, name: "Alice" },
+        ...sealedDemo.map((o) => ({ opens: o, name: "Гость демо" })),
+      ],
+      total: 3 + sealedDemo.length,
+      mine: sealedDemo.map((o, i) => ({ id: i + 1, created: Date.now(), opens: o, opened: null })),
+    });
+  if (p === "/api/game" && method === "GET") {
+    if (q.get("kind") === "quick")
+      return ok({
+        t: Date.now(),
+        top: [
+          { ms: 187, name: "Дина", picture: "" },
+          { ms: 214, name: "Карл", picture: "" },
+        ],
+        mine: null,
+      });
+    const day = dayNumber();
+    const g = normalize(q.get("g"));
+    if (q.get("g") === null) return ok({ day, streak: 0 });
+    if (!validGuess(g)) return ok({ error: "invalid" }, 400);
+    const answer = wordOf(day);
+    const pat = score(g, answer);
+    const over = pat === "ggggg" || Number(q.get("n")) >= WORD_TRIES;
+    return ok({ day, p: pat, ...(over ? { answer } : {}) });
+  }
+  if (p === "/api/game") return ok({ streak: 1, best: 200, added: [] });
+  if (p === "/api/garden") {
+    if (body?.action === "plant") plant = { kind: body.kind, stage: 0, day: -1 };
+    if (body?.action === "water" && plant) plant = { ...plant, stage: Math.min(4, plant.stage + 1), day: 1 };
+    if (body?.action === "dig") plant = null;
+    return ok({ ok: true, added: body?.action === "plant" ? ["gardener"] : [] }, 201);
+  }
+  if (p === "/api/capsule") {
+    if (typeof body?.opens === "number") sealedDemo.push(body.opens);
+    return ok({ capsule: { id: 1, created: Date.now(), opens: body?.opens, opened: null }, added: [] }, 201);
   }
   if (p === "/api/user/logout") {
     user = null;
@@ -284,6 +351,9 @@ export function demoApi(path: string, method: string, body?: any) {
   }
   if (p === "/api/blog/view") return ok({ ok: true });
 
+  if (p === "/api/stamps" && method === "GET")
+    return ok({ stamps: user ? [...owned].map((code) => ({ code, created: Date.now() })) : [] });
+
   if (p === "/api/blog/comments" && method === "GET") {
     const list = (store[Number(q.get("post"))] ?? []).map(({ post: _p, text: _t, ...rest }) => ({
       ...rest,
@@ -301,6 +371,11 @@ export function demoApi(path: string, method: string, body?: any) {
   }
 
   if (!user) return ok({ error: "login" }, 401);
+
+  if (p === "/api/stamps" && method === "POST") {
+    for (const c of Array.isArray(body?.codes) ? body.codes : []) if (typeof c === "string") owned.add(c);
+    return ok({ ok: true });
+  }
   if (banned)
     return ok(
       { error: "banned", ban: { scope: "blog", reason: "Реклама в комментариях", until: null } },
@@ -316,7 +391,9 @@ export function demoApi(path: string, method: string, body?: any) {
     if (list.some((x) => x.user?.id === user!.id && x.text === text)) return ok({ error: "duplicate" }, 409);
     last = Date.now();
     const parent = body.parent ? (list.find((x) => x.id === body.parent)?.parent ?? body.parent) : null;
-    c(body.post, ++nextId, user, text, 0, { parent, to: body.parent ?? null, own: true });
+    const card =
+      body.card && typeof body.card.icon === "string" && !parent ? { icon: body.card.icon, c: "RU" } : null;
+    c(body.post, ++nextId, user, text, 0, { parent, to: body.parent ?? null, own: true, card });
     const made = list[list.length - 1];
     const { post: _p, text: _t, ...rest } = made;
     return ok({ comment: rest, status: made.flagged ? "flagged" : "visible" }, 201);

@@ -1,3 +1,4 @@
+import { found } from "../stamps/client";
 import { Ico } from "./ui/Icon";
 import { useEffect, useRef, useState } from "preact/hooks";
 import type { Ref } from "preact";
@@ -13,6 +14,10 @@ import { fetchCommunity, suggest } from "../lib/presets";
 import { loginUrl, refreshMe, useMe } from "../blog/api";
 import { dateOf, strings } from "../blog/strings";
 import type { Community, SuggestResult } from "../lib/presets";
+import { HOLIDAYS, SKIES, planFromCode } from "../weather/prefs";
+import type { Report, WxPrefs } from "../weather/prefs";
+import { wxStrings } from "../weather/strings";
+import { reducedMotion } from "../weather/Weather";
 
 type Props = {
   l: L;
@@ -23,6 +28,9 @@ type Props = {
   open: boolean;
   setOpen: (v: boolean) => void;
   gearRef: Ref<HTMLButtonElement>;
+  wx: WxPrefs;
+  setWx: (p: WxPrefs) => void;
+  report: Report | null | "none";
 };
 
 const KEYS = ["bg", "surf", "ink", "acc", "acc2"] as const;
@@ -38,7 +46,20 @@ function Swatch({ palette }: { palette: Palette }) {
   );
 }
 
-export function Customizer({ l, th, setTh, retro, setRetro, open, setOpen, gearRef }: Props) {
+export function Customizer({
+  l,
+  th,
+  setTh,
+  retro,
+  setRetro,
+  open,
+  setOpen,
+  gearRef,
+  wx,
+  setWx,
+  report,
+}: Props) {
+  const w = wxStrings(l);
   const u = site.ui[l];
   const b = strings(l);
   const me = useMe();
@@ -83,6 +104,7 @@ export function Customizer({ l, th, setTh, retro, setRetro, open, setOpen, gearR
       th.mode === "dark" || (th.mode === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
     const base = palette ?? (dark ? presets[0].palette : presets[1].palette);
     choose({ ...base, [key]: value }, undefined);
+    found("designer");
   };
 
   const send = async () => {
@@ -121,6 +143,39 @@ export function Customizer({ l, th, setTh, retro, setRetro, open, setOpen, gearR
           </button>
         ))}
       </div>
+      <h4>{w.weather}</h4>
+      <select
+        class="wxsel"
+        value={wx.sky}
+        aria-label={w.weather}
+        onChange={(e) => setWx({ ...wx, sky: (e.target as HTMLSelectElement).value as WxPrefs["sky"] })}
+      >
+        {SKIES.map((s) => (
+          <option value={s}>{w.sky[s]}</option>
+        ))}
+      </select>
+      {wx.sky === "auto" && (
+        <p class="hk">
+          {reducedMotion()
+            ? w.motion
+            : report === "none"
+              ? w.unknown
+              : report && w.now(report.city, report.temp, w.sky[planFromCode(report.code, report.wind).kind])}
+        </p>
+      )}
+      <h4>{w.holidays}</h4>
+      <select
+        class="wxsel"
+        value={wx.holiday}
+        aria-label={w.holidays}
+        onChange={(e) =>
+          setWx({ ...wx, holiday: (e.target as HTMLSelectElement).value as WxPrefs["holiday"] })
+        }
+      >
+        {HOLIDAYS.map((h) => (
+          <option value={h}>{w.holiday[h]}</option>
+        ))}
+      </select>
       <h4>{u.accent}</h4>
       <input
         type="range"

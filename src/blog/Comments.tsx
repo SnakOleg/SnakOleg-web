@@ -1,22 +1,54 @@
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import { COMMENT_MAX, EDIT_WINDOW_MS } from "../../shared/blog";
+import { CARD_ICONS, CARD_MAX } from "../../shared/cards";
 import { Ico } from "../components/ui/Icon";
 import { renderComment } from "../lib/markdown";
 import type { L } from "../lib/i18n";
 import { api, errorText, useMe } from "./api";
 import type { Cmt } from "./api";
+import { ICONS } from "../stamps/icons";
+import { InkDefs, Stamp } from "../stamps/Stamp";
 import { Reactions } from "./parts";
 import { ago, strings } from "./strings";
 import { Avatar, BanNotice, LoginButton, Menu, Name, ask, toast } from "./ui";
 import { site } from "../config";
 import avatarCat from "../assets/illustrations/avatar-cat.svg";
 
+const regionName = (cc: string, l: L) => {
+  try {
+    return new Intl.DisplayNames([l], { type: "region" }).of(cc) ?? cc;
+  } catch {
+    return cc;
+  }
+};
+
+function CardStamp({ card, id, l }: { card: NonNullable<Cmt["card"]>; id: number; l: L }) {
+  const hue = (CARD_ICONS.indexOf(card.icon as (typeof CARD_ICONS)[number]) * 47 + 20) % 360;
+  const place = card.c ? regionName(card.c, l) : "";
+  return (
+    <div class="cstamp">
+      <Stamp look={{ icon: card.icon, frame: "postage", hue, title: place, hint: "" }} id={`pc${id}`} />
+      {place && <small>{place}</small>}
+    </div>
+  );
+}
+
 function Body({ c, l }: { c: Cmt; l: L }) {
   const b = strings(l);
   const [text, setText] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  if (!c.flagged) return <div class="md" dangerouslySetInnerHTML={{ __html: renderComment(c.body) }} />;
+  if (!c.flagged) {
+    const md = <div class="md" dangerouslySetInnerHTML={{ __html: renderComment(c.body) }} />;
+    return c.card ? (
+      <div class="pcard">
+        {md}
+        <CardStamp card={c.card} id={c.id} l={l} />
+      </div>
+    ) : (
+      md
+    );
+  }
 
   // Possible spam: only the label is sent. The text is fetched on demand and its links are not clickable.
   const reveal = async () => {
@@ -275,6 +307,7 @@ function Composer({
   to,
   l,
   inline = false,
+  guest = false,
   onDone,
   onCancel,
 }: {
@@ -282,6 +315,7 @@ function Composer({
   to: Cmt | null;
   l: L;
   inline?: boolean;
+  guest?: boolean;
   onDone: (c: Cmt) => void;
   onCancel?: () => void;
 }) {
@@ -290,7 +324,9 @@ function Composer({
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [icon, setIcon] = useState<string | null>(null);
   const box = useRef<HTMLTextAreaElement>(null);
+  const cap = icon ? CARD_MAX : COMMENT_MAX;
   useEffect(() => {
     if (inline) box.current?.focus();
   }, []);
@@ -301,10 +337,16 @@ function Composer({
     if (busy || !text.trim()) return;
     setBusy(true);
     setErr("");
-    const r = await api<{ comment: Cmt }>("/api/blog/comments", "POST", { post, body: text, parent: to?.id });
+    const r = await api<{ comment: Cmt }>("/api/blog/comments", "POST", {
+      post,
+      body: text,
+      parent: to?.id,
+      ...(icon ? { card: { icon } } : {}),
+    });
     setBusy(false);
     if (r.ok) {
       setText("");
+      setIcon(null);
       onDone(r.data.comment);
     } else if (r.data.error === "banned") {
       setErr("banned");
@@ -325,15 +367,36 @@ function Composer({
           ref={box}
           value={text}
           rows={inline ? 2 : 3}
-          maxLength={COMMENT_MAX}
-          placeholder={b.placeholder}
+          maxLength={cap}
+          placeholder={icon ? b.cardPlaceholder : b.placeholder}
           aria-label={b.writeComment}
           onInput={(e) => setText((e.target as HTMLTextAreaElement).value)}
           onKeyDown={(e) => (e.ctrlKey || e.metaKey) && e.key === "Enter" && void submit(e)}
         />
+        {guest && !to && (
+          <div class="cardpick" role="group" aria-label={b.cardPick}>
+            <span>{b.cardLabel}</span>
+            {CARD_ICONS.map((n) => (
+              <button
+                type="button"
+                class={icon === n ? "on" : ""}
+                aria-pressed={icon === n}
+                aria-label={n}
+                onClick={() => {
+                  setIcon(icon === n ? null : n);
+                  if (icon !== n) setText((t) => t.slice(0, CARD_MAX));
+                }}
+              >
+                <svg viewBox="0 0 48 48" aria-hidden="true">
+                  {ICONS[n]}
+                </svg>
+              </button>
+            ))}
+          </div>
+        )}
         <div class="row">
-          <small class={text.length > COMMENT_MAX - 100 ? "warn" : ""}>
-            {text.length}/{COMMENT_MAX} {b.chars}
+          <small class={text.length > cap - 100 ? "warn" : ""}>
+            {text.length}/{cap} {b.chars}
           </small>
           {err && err !== "banned" && (
             <span class="err" role="alert">
@@ -553,6 +616,7 @@ export function Comments({
 
   return (
     <section class="comments" id="comments" aria-labelledby="cm-h">
+      {guest && <InkDefs />}
       <h2 id="cm-h">
         {guest ? b.guestEntries : b.comments} <span>{total}</span>
       </h2>
@@ -567,7 +631,7 @@ export function Comments({
       ) : ban ? (
         <BanNotice ban={ban} scope="blog" l={l} />
       ) : (
-        <Composer post={post} to={null} l={l} onDone={added} />
+        <Composer post={post} to={null} l={l} guest={guest} onDone={added} />
       )}
 
       {total > 1 && (

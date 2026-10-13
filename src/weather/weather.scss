@@ -1,0 +1,77 @@
+.wx {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.garland {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  height: 30px;
+  pointer-events: none;
+
+  svg {
+    width: 100%;
+    height: 30px;
+  }
+
+  path {
+    fill: none;
+    stroke: color-mix(in srgb, var(--ink) 45%, transparent);
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+  }
+
+  i {
+    position: absolute;
+    width: 7px;
+    height: 10px;
+    margin-left: -3.5px;
+    border-radius: 50% 50% 45% 45%;
+    background: var(--c);
+    box-shadow: 0 0 8px 2px var(--c);
+    animation: bulb 1.6s ease-in-out infinite alternate;
+    animation-delay: var(--d);
+
+    &:nth-child(4n + 2) {
+      --c: #ff5a6e;
+    }
+    &:nth-child(4n + 3) {
+      --c: #ffd84a;
+    }
+    &:nth-child(4n + 4) {
+      --c: #4ad6ff;
+    }
+    &:nth-child(4n + 5) {
+      --c: #6dff8a;
+    }
+  }
+}
+
+@keyframes bulb {
+  from {
+    opacity: 0.35;
+    box-shadow: 0 0 2px 0 var(--c);
+  }
+}
+
+.web {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: clamp(90px, 14vw, 150px);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .garland i {
+    animation: none;
+  }
+}

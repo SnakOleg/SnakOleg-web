@@ -38,6 +38,7 @@ More details in [docs/CUSTOMIZE.md](docs/CUSTOMIZE.md).
 | `npm run build:demo`   | Dashboard with fake data in `dist-demo/admin.html`                 |
 | `npm run sync`         | Refresh the GitHub snapshot                                        |
 | `npm run check`        | Type check, lint and formatting check                              |
+| `npm run live:deploy`  | Deploy the Worker for the online counter and cursors               |
 
 ## Structure
 
@@ -51,7 +52,9 @@ src/
   lib/          helpers (i18n, GitHub nodes, content loading, tracking)
   styles/       SCSS partials
   admin/        dashboard (pages, charts, schema driven editor)
-functions/api/  backend endpoints (auth, content, track, blog, admin)
+  live/         online counter and cursors (client side)
+functions/api/  backend endpoints (auth, content, track, blog, admin, live)
+realtime/       Worker with the Durable Object for live presence
 tests/          unit and integration tests
 shared/         code used by both frontend and backend
 migrations/     D1 schema
@@ -75,6 +78,14 @@ A project card opens a detail window with a longer text, your role, the reposito
 
 - `/uses` is the "My setup" page: a glass desktop in the spirit of macOS 27 Golden Gate with draggable windows, a Dock and a Spotlight style search (`/` or Ctrl+K). Devices, specs and apps are edited in the dashboard (Content, "Мой стек").
 - The 404 page hides a small snake game ("catch the bugs").
+- Weather: rain, snow, fog, clouds and thunderstorms drawn on a canvas behind the content. Drops splash on the top edges of cards, snow piles up on them, the cursor works as an umbrella. "Like outside" asks `/api/weather`, which reads the visitor's city from Cloudflare and asks Open-Meteo from the server (cached for 15 minutes). Visitors can pick any weather or turn it off in the settings panel.
+- Holidays by calendar: a garland and snow for New Year, bats and a cobweb for Halloween, hearts for Valentine's Day. Can be previewed or turned off in the settings panel. With "reduce motion" on, the automatic effects stay off.
+- Live presence: online counter at the bottom left and anonymous cursors of people on the same page (see docs/SETUP.md, 4.1).
+- Terminal: press the `key (the letter ё on a Russian layout) or the`>_`button in the footer. It knows`help`, `ls`, `cat`, `cd`, `theme`, `lang`, `weather`, `open` and a handful of hidden commands.
+- Passport: every easter egg gives a stamp (terminal commands, the Konami code, typing the name, the night owl, and more). Stamps are kept in the browser and, for visitors signed in with Telegram, in the `stamps` table. Eggs are listed in `shared/stamps.ts`; the browser reports them and the server accepts only ids from that list, so a stamp is a keepsake and not a proof of anything.
+- Visitors map: countries on the home page glow by number of visits, outlined ones have sent postcards. Postcards are guestbook entries with a stamp and the sender's country.
+- Games (`/games`, footer, or `word`, `reaction`, `garden`, `capsule` in the terminal), each on its own page: word of the day with a streak and emoji share, reaction test with a leaderboard, a shared garden scene where visitors water each other's plants, and time capsules frozen in a cryo bay until a chosen date.
+- Status: write `/now` to the Telegram bot and the footer shows what you are doing (see docs/SETUP.md).
 - Themes: visitors can pick a ready palette or build their own from five colors in the settings panel. Palettes with unreadable text are flagged. A visitor can suggest a palette, it appears for everyone only after you approve it in the dashboard ("Темы"). Limits: 5 suggestions an hour per address, 100 waiting, 300 stored.
 - The 2003 mode (Konami code, or "Режим 2003" in the settings panel) rebuilds the page as an old personal homepage: scanlines, neon grid, a marquee, 88x31 buttons, sparkles behind the pointer and a visitor counter that shows the real number of page views.
 

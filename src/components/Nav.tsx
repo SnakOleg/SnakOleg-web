@@ -1,6 +1,7 @@
 import type { Ref } from "preact";
 import { site } from "../config";
 import type { L } from "../lib/i18n";
+import { gameStrings } from "../games/strings";
 import { Ico } from "./ui/Icon";
 
 type Props = {
@@ -9,7 +10,7 @@ type Props = {
   open: boolean;
   setOpen: (v: boolean) => void;
   gearRef: Ref<HTMLButtonElement>;
-  page?: "home" | "uses" | "blog";
+  page?: "home" | "uses" | "blog" | "games";
 };
 
 export function Nav({ l, setL, open, setOpen, gearRef, page = "home" }: Props) {
@@ -30,6 +31,9 @@ export function Nav({ l, setL, open, setOpen, gearRef, page = "home" }: Props) {
       </a>
       <a href="/blog" aria-current={page === "blog" ? "page" : undefined}>
         {u.blogNav}
+      </a>
+      <a href="/games" aria-current={page === "games" ? "page" : undefined}>
+        {gameStrings(l).title}
       </a>
       <a href="/uses" aria-current={page === "uses" ? "page" : undefined}>
         {u.usesNav}

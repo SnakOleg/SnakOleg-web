@@ -724,7 +724,7 @@
 $line: 2px;
 $bend: 1.15rem;
 .kids {
-  margin: 0 0 0 calc(1rem - #{$line / 2});
+  margin: 0 0 0 calc(1rem - #{$line * 0.5});
   padding: 0;
   list-style: none;
   > .node {
@@ -1257,5 +1257,75 @@ label.chk {
       color: var(--mut);
       font-size: 0.78rem;
     }
+  }
+}
+
+.cardpick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.5rem 0 0.2rem;
+  span {
+    margin-right: 0.3rem;
+    color: var(--mut);
+    font-size: 0.82rem;
+  }
+  button {
+    display: grid;
+    place-items: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border: 1px solid var(--line);
+    border-radius: 0.6rem;
+    background: transparent;
+    color: var(--mut);
+    cursor: pointer;
+    &:hover {
+      color: var(--ink);
+    }
+    &.on {
+      border-color: var(--acc);
+      color: var(--acc);
+    }
+    svg {
+      width: 1.4rem;
+      height: 1.4rem;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  }
+}
+
+.pcard {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 0.8rem 1rem;
+  border: 1px dashed var(--line);
+  border-radius: 0.6rem;
+  .md {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.cstamp {
+  display: grid;
+  justify-items: center;
+  gap: 0.15rem;
+  flex: none;
+  user-select: none;
+  .stamp {
+    width: 4.6rem;
+    height: 4.6rem;
+  }
+  small {
+    color: var(--mut);
+    font-size: 0.72rem;
   }
 }

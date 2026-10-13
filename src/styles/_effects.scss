@@ -83,3 +83,16 @@
     color: var(--acc);
   }
 }
+
+html.zoomed {
+  *,
+  *::before,
+  *::after {
+    backdrop-filter: none !important;
+    animation-play-state: paused !important;
+  }
+  .mark,
+  .aurora {
+    display: none;
+  }
+}

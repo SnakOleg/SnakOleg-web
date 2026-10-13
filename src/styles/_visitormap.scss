@@ -1,0 +1,64 @@
+.vmap {
+  margin: 0 0 5rem;
+  animation: bp-in 0.7s ease-out;
+  .vmh {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    h2.ph {
+      margin: 0;
+      text-align: left;
+    }
+  }
+  .vmn {
+    color: var(--mut);
+    font-size: 0.9rem;
+  }
+  .vmhint {
+    margin: 0.5rem 0 1rem;
+    color: var(--mut);
+    font-size: 0.9rem;
+  }
+  .vmwrap {
+    padding: 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    background: var(--surf);
+    user-select: none;
+  }
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  path {
+    fill: color-mix(in srgb, var(--mut) 16%, transparent);
+    stroke: var(--bg);
+    stroke-width: 0.5;
+    transition: fill 0.2s;
+    &.lit {
+      fill: color-mix(in srgb, var(--acc) calc(var(--lv) * 100%), transparent);
+    }
+    &.card {
+      stroke: var(--acc);
+      stroke-width: 1.4;
+      stroke-linejoin: round;
+    }
+    &:hover {
+      fill: var(--acc);
+    }
+  }
+  .vmtip {
+    min-height: 1.4rem;
+    margin: 0.6rem 0 0;
+    font-size: 0.9rem;
+    color: var(--mut);
+    b {
+      color: var(--ink);
+    }
+    a {
+      color: var(--acc);
+    }
+  }
+}

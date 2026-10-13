@@ -6,6 +6,8 @@ export interface Env {
   SESSION_SECRET: string;
   STATS_TZ?: string;
   TG_BOT_TOKEN?: string;
+  BOT_SECRET?: string;
+  LIVE?: DurableObjectNamespace;
 }
 
 import { b64u, unb64u, verify } from "../../shared/token";

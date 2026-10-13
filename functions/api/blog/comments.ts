@@ -1,7 +1,9 @@
 import { COMMENT_MAX, GUESTBOOK, cleanText } from "../../../shared/blog";
+import { CARD_MAX, CARD_ICONS, countryOk, parseCard } from "../../../shared/cards";
 import { isSpam, scoreComment } from "../../../shared/spam";
 import { activeBan, banBody, getSettings, getUser, hashIp, publicUser, requireUser } from "../_blog";
 import { Env, geo, json, limit, localDay, notify } from "../_lib";
+import { award } from "../_stamps";
 import { reactionsFor } from "./_shared";
 
 type Row = {
@@ -14,6 +16,7 @@ type Row = {
   created: number;
   edited: number | null;
   pinned: number;
+  card: string | null;
   name: string | null;
   username: string | null;
   picture: string | null;
@@ -38,6 +41,7 @@ export const toPublic = (r: Row, env: Env, me: string | null) => {
     created: r.created,
     edited: r.edited,
     pinned: r.pinned === 1,
+    card: gone ? null : parseCard(r.card),
     own: r.user_id === me,
   };
 };
@@ -47,7 +51,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   if (!Number.isInteger(post)) return json({ error: "invalid" }, 400);
   const me = await getUser(request, env);
   const { results } = await env.DB.prepare(
-    `SELECT c.id,c.parent_id,c.reply_to,c.user_id,c.body,c.status,c.created,c.edited,c.pinned,u.name,u.username,u.picture
+    `SELECT c.id,c.parent_id,c.reply_to,c.user_id,c.body,c.status,c.created,c.edited,c.pinned,c.card,u.name,u.username,u.picture
      FROM comments c LEFT JOIN users u ON u.id=c.user_id
      WHERE c.post_id=?1 AND (c.status IN ('visible','flagged') OR (c.status='pending' AND c.user_id=?2))
      ORDER BY c.created ASC LIMIT 400`,
@@ -96,6 +100,18 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
   if (!Number.isInteger(postId) || postId < 0 || !text) return json({ error: "invalid" }, 400);
   if (text.length > COMMENT_MAX) return json({ error: "too_long" }, 413);
 
+  // A postcard is a guestbook entry with a stamp. It is a new thread, never a reply.
+  const cardIn = body?.card as { icon?: unknown } | undefined;
+  if (cardIn !== undefined) {
+    if (
+      postId !== GUESTBOOK ||
+      body?.parent != null ||
+      !(CARD_ICONS as readonly unknown[]).includes(cardIn?.icon)
+    )
+      return json({ error: "invalid" }, 400);
+    if (text.length > CARD_MAX) return json({ error: "too_long" }, 413);
+  }
+
   const settings = await getSettings(env);
   const post =
     postId === GUESTBOOK
@@ -108,7 +124,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
   if (!post) return json({ error: "not_found" }, 404);
   if (!settings.commentsOpen || !post.comments_open) return json({ error: "closed" }, 403);
 
-  const { ip } = geo(request);
+  const { ip, country } = geo(request);
+  const card = cardIn ? { icon: cardIn.icon as string, c: countryOk(country) ? country : "" } : null;
   if (!u.owner) {
     if (settings.slowMode && !(await limit(env, `cs:${u.id}`, 1, settings.slowMode)))
       return json({ error: "slow", wait: settings.slowMode }, 429);
@@ -152,7 +169,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
 
   const now = Date.now();
   const row = await env.DB.prepare(
-    "INSERT INTO comments(post_id,parent_id,reply_to,user_id,body,status,flags,ip_hash,created) VALUES (?,?,?,?,?,?,?,?,?) RETURNING id",
+    "INSERT INTO comments(post_id,parent_id,reply_to,user_id,body,status,flags,ip_hash,created,card) VALUES (?,?,?,?,?,?,?,?,?,?) RETURNING id",
   )
     .bind(
       postId,
@@ -164,9 +181,12 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
       JSON.stringify(verdict.flags),
       await hashIp(env, ip),
       now,
+      card ? JSON.stringify(card) : null,
     )
     .first<{ id: number }>();
   await env.DB.prepare("UPDATE users SET comments=comments+1, seen=? WHERE id=?").bind(now, u.id).run();
+  if (postId === GUESTBOOK && status !== "flagged")
+    await award(env, u.id, card ? ["postcard", ...(card.c ? [`c:${card.c}`] : [])] : ["guest"]);
 
   if (!u.owner && (status !== "visible" || (await limit(env, "notify:comment", 6, 3600)))) {
     if (status === "visible" || (await limit(env, "notify:flag", 6, 3600)))
@@ -192,6 +212,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
         created: now,
         edited: null,
         pinned: false,
+        card: card ? parseCard(card) : null,
         own: true,
         reactions: {},
         mine: [],
