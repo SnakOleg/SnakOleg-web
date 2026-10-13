@@ -15,7 +15,7 @@ export function BlogPreview({ l }: { l: L }) {
   }, []);
   if (!posts.length) return null;
   return (
-    <section class="bp rv" aria-labelledby="bp-h">
+    <section class="bp" aria-labelledby="bp-h">
       <div class="bph">
         <h2 id="bp-h" class="ph">
           {b.fromBlog}
